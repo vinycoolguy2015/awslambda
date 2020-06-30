@@ -86,6 +86,6 @@ def lambda_handler(event, context):
             
                 csv_file.write("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n"%(region,vpcid,vpccidr,vpcname,subnetid,subnetcidr,subnetaz,subnetname,availableip,routetableid,routetablename,gateway_id,naclid,len(instances),':::'.join(instances)))
             csv_file.flush()
-    send_report("Network Report",os.environ['sender'],os.environ['reciever'],output_file)
+    send_report("Network Report",os.environ['sender'],os.environ['receiver'],output_file)
         
     
