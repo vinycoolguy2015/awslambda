@@ -1,0 +1,19 @@
+{
+  "source": [
+    "aws.config"
+  ],
+  "detail": {
+    "requestParameters": {
+      "evaluations": {
+        "complianceType": [
+          "NON_COMPLIANT"
+        ]
+      }
+    },
+    "additionalEventData": {
+      "managedRuleIdentifier": [
+        "INCOMING_SSH_DISABLED"
+      ]
+    }
+  }
+}
