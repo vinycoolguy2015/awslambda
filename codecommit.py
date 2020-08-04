@@ -18,4 +18,4 @@ def lambda_handler(event, context):
         elif differences['afterBlob']['path'] == 'critical.txt':
             data = codecommit_client.get_file(repositoryName=repo,filePath=differences['afterBlob']['path'])
             endpoint=data['fileContent'].decode("utf-8").strip()
-            sns_client.subscribe(TopicArn=emergency_sns,Protocol=email,Endpoint=endpoint)
+            sns_client.subscribe(TopicArn=emergency_sns,Protocol='email',Endpoint=endpoint)
