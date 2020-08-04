@@ -1,9 +1,20 @@
 import boto3
 
 def lambda_handler(event, context):
-    client = boto3.client('codecommit')
-    commitresponse = client.get_differences(repositoryName='test',afterPath='/master',afterCommitSpecifier=event['Records'][0]['codecommit']['references'][0]['commit'])
+    repo='test'
+    normal_sns='arn:aws:sns:us-east-1:953898941182:normal'
+    emergency_sns='arn:aws:sns:us-east-1:953898941182:emergency'
+    codecommit_client = boto3.client('codecommit')
+    sns_client = boto3.client('sns')
+    commitresponse = codecommit_client.get_differences(repositoryName=repo,afterCommitSpecifier=event['Records'][0]['codecommit']['references'][0]['commit'])
     for differences in commitresponse['differences']:
-        if differences['afterBlob']['path'] == 'b.txt':
-            data = client.get_file(repositoryName='test',filePath='master/'+differences['afterBlob']['path'])
-            print(data['fileContent'])
+        if differences['afterBlob']['path'] == 'normal.txt':
+            data = codecommit_client.get_file(repositoryName=repo,filePath=differences['afterBlob']['path'])
+            endpoint=str(data['fileContent']).rstrip()
+            print("endpoint is "+endpoint)
+            print(type(endpoint))
+            sns_client.subscribe(TopicArn=normal_sns,Protocol='email',Endpoint=endpoint)
+        elif differences['afterBlob']['path'] == 'critical.txt':
+            data = codecommit_client.get_file(repositoryName=repo,filePath=differences['afterBlob']['path'])
+            endpoint=str(data['fileContent']).rstrip()
+            sns_client.subscribe(TopicArn='string',Protocol='string',Endpoint=endpoint)
