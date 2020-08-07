@@ -2,8 +2,8 @@ import boto3
 
 def lambda_handler(event, context):
     repo='test'
-    normal_sns='arn:aws:sns:us-east-1:953898941182:normal'
-    emergency_sns='arn:aws:sns:us-east-1:953898941182:emergency'
+    normal_sns='arn:aws:sns:us-east-1:<your_aws_account_number>:normal'
+    emergency_sns='arn:aws:sns:us-east-1:<your_aws_account_number>:emergency'
     
     codecommit_client = boto3.client('codecommit')
     sns_client = boto3.client('sns')
