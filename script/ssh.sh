@@ -1,10 +1,10 @@
 #!/bin/bash
 
 input="user.txt"
-server1= 
-server2=
+server1=x.x.x.x
+server2=x.x.x.x
 password=password.txt
-default_user_password=""
+default_user_password="user_password@2020#"
 
 #Function to copy ssh keys from server1
 copy_ssh_key() {
