@@ -44,5 +44,4 @@ create-kubernetes-cluster:
 	gcloud compute ssh --zone us-central1-a centos@kubernetes-master1 --command 'cd kubespray && ansible-playbook -i inventory/mycluster/hosts.ini --become --become-user=root --key-file=~/.ssh/id_rsa cluster.yml'
 	
 	gcloud compute ssh --zone us-central1-a centos@kubernetes-master1 --command 'sudo cp /etc/kubernetes/admin.conf /tmp && sudo chown centos:centos /tmp/admin.conf'
-	mkdir ~/.kube
-	gcloud compute scp --zone us-central1-a centos@kubernetes-master1:/tmp/admin.conf ~/.kube/
+	
