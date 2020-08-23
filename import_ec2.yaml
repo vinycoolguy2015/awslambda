@@ -396,6 +396,7 @@ Resources:
     Properties:
       Size: '10'
       AvailabilityZone: 'us-west-2c'
+      VolumeType: gp2
       Tags:
       - Key: "Name"
         Value: "Volume for Test Instance"
