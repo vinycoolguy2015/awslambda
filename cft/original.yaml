@@ -1,5 +1,4 @@
 AWSTemplateFormatVersion: 2010-09-09
-
 Parameters:
   KeyName:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
@@ -27,14 +26,11 @@ Mappings:
       Arch: HVM64
     t2.small:
       Arch: HVM64
-    
   AWSInstanceType2NATArch:
-    
     t2.micro:
       Arch: NATHVM64
     t2.small:
       Arch: NATHVM64
-    
   AWSRegionArch2AMI:
     us-east-1:
       HVM64: ami-0080e4c5bc078760e
@@ -101,6 +97,12 @@ Resources:
       SecurityGroups:
         - !Ref InstanceSecurityGroup
       KeyName: !Ref KeyName
+      UserData:
+        Fn::Base64: 
+          !Sub |
+            #!/bin/bash -xe
+            yum install httpd -y
+            service httpd start
       ImageId: !FindInMap 
         - AWSRegionArch2AMI
         - !Ref 'AWS::Region'
@@ -121,57 +123,37 @@ Resources:
           FromPort: '80'
           ToPort: '80'
           CidrIp: !Ref SSHLocation
-  MyEC2Instance: 
-    Type: AWS::EC2::Instance
-    DeletionPolicy: "Delete"
-    Properties: 
-      ImageId: "ami-0a07be880014c7b8e"
-      InstanceType: t2.micro
-      KeyName: "test"
-      SecurityGroups:
-        - !Ref InstanceSecurityGroup
-      Tags:
-      - Key: "Name"
-        Value: "Test"
-  
-
   LoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties: 
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
       Name: Test-LB
       Scheme: internal
-      Subnets: 
-      - subnet-070642098b85976ed
-      - subnet-0a8a0755802e8d10c
-      Tags: 
+      Subnets:
+        - subnet-070642098b85976ed
+        - subnet-0a8a0755802e8d10c
+      Tags:
         - Key: Name
           Value: Test-LB
       Type: network
-    
   LBListener:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties: 
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
       Name: LB-Listener
       Port: 80
       Protocol: TCP
-      Tags: 
+      Tags:
         - Key: Name
           Value: Lb-Listener
-      Targets: 
-      - Id: !Ref EC2Instance
-        Port: 80
+      Targets:
+        - Id: !Ref EC2Instance
+          Port: 80
       VpcId: vpc-01ccb1bd848f9578b
-      
   ListnerRule:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties: 
-      DefaultActions: 
-      - Type: forward
-        TargetGroupArn: !Ref LBListener
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref LBListener
       LoadBalancerArn: !Ref LoadBalancer
       Port: 80
       Protocol: TCP
-  
-
-
-
