@@ -6,7 +6,7 @@ MONGO_DB='admin'
 
 cloudwatch = boto3.client('cloudwatch', region_name='ap-south-1')
     
-connection = MongoClient('mongodb://vinayak:Mongo1086#@server1.example.com:27017,server2.example.com:27017,server3.example.com:27017/?replicaSet=example-replica-set') 
+connection = MongoClient('mongodb://username:password@server1.example.com:27017,server2.example.com:27017,server3.example.com:27017/?replicaSet=example-replica-set') 
 
 db = connection[MONGO_DB]
 
