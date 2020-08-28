@@ -58,8 +58,7 @@ page_faults=server_status['extra_info']['page_faults']
 active_readers=server_status['globalLock']['activeClients']['readers']
 active_writers=server_status['globalLock']['activeClients']['writers']
 
-#Push metric
-timestamp=int(time.time())
+#Create metric data
 
 server_metrics_name=['active_writers','active_writers','page_faults','write_request_queued','read_request_queued','read_io','write_io','open_file','network_in','network_out','resident_memory','virtual_memory','current_connections','available_connections']
 
@@ -83,5 +82,8 @@ for metric in replicaset_metrics_name:
   data['Unit']='Count'
   replicaset_metrics.append(data)
 
+
+#Push metrics to CloudWatch
+timestamp=int(time.time())
 response = cloudwatch.put_metric_data(Namespace='mongo',MetricData=server_metrics)
 response = cloudwatch.put_metric_data(Namespace='mongo',MetricData=replicaset_metrics)
