@@ -1,0 +1,22 @@
+- hosts: localhost
+  
+  tasks:
+  - name: create key pair using key_material obtained using 'file' lookup plugin
+    ec2_key:
+      name: interview-ansible-1598618286
+      key_material: "{{ lookup('file', '/home/ec2-user/.ssh/id_rsa.pub') }}"
+    register: ec2_key
+
+  - name: get key id
+    shell: aws ec2 describe-key-pairs --key-names interview-ansible-1598618286|jq '.KeyPairs[].KeyPairId' | tr -d '"'
+    register: keyid
+
+  - debug:
+      var: keyid.stdout
+
+  - name: Tag key
+    ec2_tag:
+      resource: "{{ keyid.stdout }}"
+      state: present
+      tags:
+        Name: interview-ansible-1598618286
