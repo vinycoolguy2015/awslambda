@@ -1,0 +1,76 @@
+- hosts: localhost
+  tasks:
+    - name: Create a security group
+      ec2_group:
+        name: interview-ansible-1598618286
+        description: The webservers security group
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+    - name: Launch the new EC2 Instance
+      ec2:
+        group: interview-ansible-1598618286
+        instance_type: t2.nano
+        image: ami-9dcfdb8a
+        vpc_subnet_id: subnet-02370d8d2522818db
+        region: us-east-1
+        wait: true 
+        keypair: interview-ansible-1598618286
+        count: 1 
+      register: ec2
+
+    - name: Add the newly created host so that we can further contact it
+      add_host:
+        name: "{{ item.public_ip }}"
+        groups: webservers
+      with_items: "{{ ec2.instances }}"
+
+    - name: Add tag to Instance(s)
+      ec2_tag:
+        resource: "{{ item.id }}"
+        state: "present"
+      with_items: "{{ ec2.instances }}"
+      args:
+        tags:
+          Name: interview-ansible-1598618286
+
+    - name: Wait for SSH to come up
+      wait_for:
+        host: "{{ item.public_ip }}"
+        port: 22
+        state: started
+      with_items: "{{ ec2.instances }}"
+
+
+- hosts: webservers
+  remote_user: ubuntu
+  become: yes
+  gather_facts: no
+  pre_tasks:
+   - name: 'install python'
+     raw: 'sudo apt-get update -y && sudo apt-get -y install python'
+  tasks:
+   - name: Install nginx
+     apt:
+       name: nginx
+       state: present
+   - service:
+       name: nginx
+       state: started
+       enabled: yes
+   - name: Copy file with owner and permissions
+     copy:
+       src: /home/ec2-user/index.html
+       dest: /var/www/html/index.html
+       owner: root
+       group: root
+       mode: '0644' 
