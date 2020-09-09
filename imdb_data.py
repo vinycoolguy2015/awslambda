@@ -14,9 +14,10 @@ print("Searching Movies for you \n\n")
 
 BASE_URL='http://www.imdb.com/search/title?genres='
 
-for counter in range(1,51):
+for counter in range(1,2501,50):
 	end=False
-	URL=BASE_URL+genre+'&title_type=feature&sort=user_rating,desc&page='+str(counter)
+	#URL=BASE_URL+genre+'&title_type=feature&sort=user_rating,desc&page='+str(counter)
+	URL=BASE_URL+genre+'&title_type=feature&sort=user_rating,desc&start='+str(counter)
 	try:
 		data = requests.get(URL,headers=header)
 	except requests.exceptions.ConnectionError:
