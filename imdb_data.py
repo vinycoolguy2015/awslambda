@@ -12,7 +12,7 @@ year=int(raw_input("Please select the minimum release year of the movie "))
 
 print("Searching Movies for you \n\n")
 
-BASE_URL='http://www.imdb.com/search/title?genres='
+BASE_URL='https://www.imdb.com/search/title?genres='
 
 for counter in range(1,2501,50):
 	end=False
