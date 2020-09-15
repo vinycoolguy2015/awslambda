@@ -9,21 +9,21 @@ import re
 
 
 class App:
-	def __init__(self,player_name=raw_input("Enter the player name you want to search ")):
+	def __init__(self,player_name=input("Enter the player name you want to search ")):
 		self.player_name=player_name
-		if self.player_name is '':
+		if self.player_name == '':
 			print("Player name not given")
 			exit()
-		self.driver=webdriver.Chrome('C:\\Users\\vinayak.p\\Desktop\\Python\\Selenium\\chromedriver')
+		self.driver=webdriver.Chrome('/usr/local/bin/chromedriver')
 		self.url=self.search_profile()
 		if not self.url is None:
 			personal_data,bowling_record,batting_record=self.parse_profile()
-			print "Personal Data\n"
-			print personal_data
-			print "Batting Record\n"
-			print batting_record
-			print "Bowling Record\n"
-			print bowling_record
+			print ("Personal Data\n")
+			print (personal_data)
+			print ("Batting Record\n")
+			print (batting_record)
+			print ("Bowling Record\n")
+			print (bowling_record)
 		else:
 			print("Player profile not found")
 			exit()
@@ -37,15 +37,17 @@ class App:
 		try:
 			input_box = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//input[@title="Search"]')));
 		except TimeoutException:
-			print("Connection timeout")
+			print("Connection timeout during googling")
 			self.driver.close()
 			exit()
 		input_box.send_keys(self.player_name)
 		input_box.send_keys(Keys.ENTER)
 		try:
-			results = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//div[@class="srg"]'))).find_elements_by_tag_name('a')
+			#results = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//div[@class="med"]'))).find_elements_by_tag_name('a')
+                        results = self.driver.find_elements_by_xpath("//div[@class='r']/a[@href]")
+                        print(results) 
 		except TimeoutException:
-			print("Connection timeout")
+			print("Connection timeout fetching results")
 			self.driver.close()
 			exit()
 		for result in results:
@@ -66,7 +68,7 @@ class App:
 			b=url.find_element_by_tag_name('b')
 			span=url.find_element_by_tag_name('span')
 			data[b.text]=span.text
-			personal_data=dict((key,value) for key, value in data.iteritems() if key in ['Playing role','Major teams','Current age','Height','Born','Batting style','Bowling style','Full name'] )
+			personal_data=dict((key,value) for key, value in data.items() if key in ['Playing role','Major teams','Current age','Height','Born','Batting style','Bowling style','Full name'] )
 		data_rows=self.driver.find_elements_by_xpath("//tr[@class='data1']")
 		
 		
