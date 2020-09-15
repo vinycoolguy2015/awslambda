@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from bs4 import BeautifulSoup
 import re
 
 
@@ -44,7 +45,6 @@ class App:
 		try:
 			#results = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//div[@class="med"]'))).find_elements_by_tag_name('a')
                         results = self.driver.find_elements_by_xpath("//div[@class='r']/a[@href]")
-                        print(results) 
 		except TimeoutException:
 			print("Connection timeout fetching results")
 			self.driver.close()
