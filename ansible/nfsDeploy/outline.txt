@@ -1,0 +1,25 @@
+- installing and configuring an NFS static content server for web use
+- installing and configuration done with ansible user
+- the ansible user needs to be sudo
+- gathering facts on
+- connection based on ssh
+
+- what do we need to know?
+  - distribution of the system deploying on
+  - the NFS server nad client package name
+  - path to the shared file space
+
+
+- what do we need to do/install
+  - install the NFS server/client and utilities
+  - export the shared directory (/etc/exports)
+  - add our LA ab network(internal)
+  - configure the filesystem export for read/write on known networks
+    - disable any unknown network or user connectivity
+  - start the NFS service
+  - cron job to backup the filesystem
+  - NFS client installs? - common role
+    - NFS client /etc/fstab configuration to mount the share on boot..?
+
+- test
+  - capture the NFS server service status as JSON output

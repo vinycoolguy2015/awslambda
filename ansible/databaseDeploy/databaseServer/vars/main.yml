@@ -1,0 +1,7 @@
+dbserver_pkg: MariaDB-server
+dbclient_pkg: MariaDB-client
+dbserver_fqdn: vinayak.com
+dbinstalldir: /var/lib/
+dbinstancename: MyDBTest
+dbDistribution: RedHat
+dbversion: 5.5

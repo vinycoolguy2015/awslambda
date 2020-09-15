@@ -1,0 +1,6 @@
+apache_pkg: httpd
+distribution: "{{ ansible_os_family }}"
+apache_version: 2.4
+apache_dir: /var/www/sample/
+apache_fqdn: vinayak.com
+

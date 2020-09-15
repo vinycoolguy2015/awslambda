@@ -1,0 +1,17 @@
+- name: Install the Web Server Package
+  yum: pkg={{ apache_pkg }} state=latest
+- name: Create the web server directory
+  file: path={{ apache_dir }} state=directory mode=644
+- name: Copy the apache config file to remote host
+  copy: src=files/httpd.conf.template dest=/etc/httpd/conf/httpd.conf owner=root group=root mode=644
+- name: create the vhost.d directory
+  file: path=/etc/httpd/vhost.d state=directory mode=644
+- name: Copy and untar the source for the site
+  unarchive: src=files/sitecode.tar.gz dest={{ apache_dir }}
+- name: Copy the default vhost config file
+  copy: src=files/default.conf.template dest=/etc/httpd/vhost.d/default.conf owner=root group=root mode=644
+   notify:
+      - StartHttpd
+      - TestHttpd
+      - DisplayResult
+

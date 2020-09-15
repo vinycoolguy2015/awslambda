@@ -1,0 +1,8 @@
+--- # Master Playbook for Role Based Apache Web Deployment
+- hosts: mainserver
+  user: centoslive
+  sudo: yes
+  connection: ssh
+  roles:
+   - webserver
+  

@@ -1,0 +1,40 @@
+--- # DATABASE DEPLOYMENT EXAMPLE
+- hosts: databases
+  become_user: ansible
+  become: yes
+  connection: ssh
+  gather_facts: yes
+  vars: 
+    dbserver_pkg: MariaDB-server
+    dbclient_pkg: MariaDB-client
+    dbserver_fqdn: vinayak.com
+    dbinstalldir: /var/lib/
+    dbinstancename: MyDBTest
+    dbDistribution: RedHat
+    dbversion: 5.5
+  tasks:
+    - name: Install the MariaDB Server
+      yum: pkg=MariaDB-server state=latest
+    - name: Install the MariaDB Client
+      yum: pkg=MariaDB-client state=latest
+    - name: Start the DB Service
+      service: name=mariadb state=started
+    - pause: prompt="Please run the mysql_secure_installation binary and then press ENTER for the playbook to continue"
+    - name: Restart the DB Server
+      service: name=mariadb state=restarted
+    - name: Copy the remote database in order to restore
+      copy: src=files/mysqlbackup.sql dest=/var/lib/mysqlbackup.sql owner=root group=root mode=755
+    - name: Create database
+      shell: mysqladmin -u root -ppassword123 create myDBTest
+    - name: Import the database backup to the live DB
+      shell: mysql -u root -ppassword123 MyDBTest < /var/lib/mysqlbackup.sql
+      register: result
+    - debug: var=result
+    - name: Add a backup CRON Job
+      cron: name="DBBackup" minute="0" hour="0" job="mysqldump -u root -ppassword123 -databases MyDBTest > dbbackup.sql"
+    - name: Run a quick SQL commadn to be sure everything was created
+      shell: mysql -u root -ppassword123 -e 'SHOW DATABASES;'
+      register: mysqlresult
+    - debug: var=mysqlresult
+       
+

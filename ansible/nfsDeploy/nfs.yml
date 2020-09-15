@@ -1,0 +1,52 @@
+--- # NFS Server Playbook
+- hosts: mainserver
+  user: centoslive
+  sudo: yes
+  connection: ssh
+  gather_facts: yes
+  vars:
+    distribution: RedHat
+    nfsutils_pkg: nfs-utils
+    nfslibs_pkg: nfs-utils-lib
+    nfsserver_service: nfs-server
+    nfslock_service: nfs-lock
+    nfsmap_service: nfs-idmp
+    rpcbind_service: rpcbind
+    export_path: /var/share
+  tasks:
+   - name: Install the NFS server and utilities
+     yum: pkg=nfs-utils state=latest
+   - name: Install the NFS server libraries
+     yum: pkg=nfs-utils-lib state=latest
+   - name: Copy the export file to remote server
+     copy: src=files/exports.templates dest=/etc/exports owner=root group=root mode=644
+   - name: Start the RPC Bind Service
+     service: name=rpcbind state=started
+   - name: Start the NFS Service
+     service: name=nfs state=started
+   - name: Install the nfs client and utilities
+     yum: pkg=nfs-utils state=latest
+     delegate_to: 127.0.0.1
+   - name: Install the NFS Client libraries
+     yum: name=nfs-utils-lib state=latest
+     delegate_to: 127.0.0.1
+   - name: Start the RPC Bind Service on Client
+     service: name=rpcbind state=started
+     delegate_to: 127.0.0.1
+   - name: Create Client Mount Directory
+     file: path=/mnt/remote state=directory mode=755
+     delegate_to: 127.0.0.1
+   - name: Mount the filesystem on the client from the NFS Server
+     mount: name=/mnt/remote src=client:/var/share fstype=nfs4 state=present 
+     register: result
+     delegate_to: 127.0.0.1
+   - name: Show the client mount result
+     debug: var=result
+
+
+   
+
+
+
+
+

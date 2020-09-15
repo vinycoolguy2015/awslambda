@@ -1,0 +1,43 @@
+--- # Build an Apache Web Server
+- hosts: mainserver
+  user: centoslive
+  sudo: yes
+  connection: ssh
+  gather_facts: yes
+  vars:
+    apache_pkg: httpd
+    distribution: "{{ ansible_os_family }}"
+    apache_version: 2.4
+    apache_dir: /var/www/sample/
+    apache_fqdn: vinayak.com
+    port: 8080
+  tasks:
+    - name: Install the Web Server Package
+      yum: pkg={{ apache_pkg }} state=latest
+    - name: Create the web server directory
+      file: path={{ apache_dir }} state=directory mode=644
+    - name: Copy the apache config file to remote host
+      copy: src=httpd.conf.j2 dest=/etc/httpd/conf/httpd.conf owner=root group=root mode=644
+    - name: create the vhost.d directory
+      file: path=/etc/httpd/vhost.d state=directory mode=644
+    - name: Copy and untar the source for the site
+      copy: src=index.html dest={{ apache_dir }}
+    - name: Copy the default vhost config file
+      copy: src=files/default.conf.template dest=/etc/httpd/vhost.d/default.conf owner=root group=root mode=644
+      notify:
+        - StartHttpd
+        - TestHttpd
+        - DisplayResult
+  handlers:
+     - name: StartHttpd
+       service: name={{ apache_pkg }} state=started
+     - name: TestHttpd
+       shell: curl http://{{ apache_fqdn }}
+       register: result
+     - name: DisplayResult
+       debug: var=result
+      
+      
+
+
+

@@ -1,0 +1,38 @@
+--- # Build an Apache Web Server
+- hosts: all
+  user: ansible:q!
+
+  sudo: yes
+  connection: ssh
+  gather_facts: yes
+  vars:
+    apache_pkg: httpd
+    distribution: redhat
+    apache_version: 2.4
+    apache_dir: /var/www/sample/
+    apache_fqdn: vinayak.com
+  tasks:
+    - name: Install the Web Server Package
+      yum: pkg=httpd state=latest
+    - name: Create the web server directory
+      file: path=/var/www/sample state=directory mode=644
+    - name: Copy the apache config file to remote host
+      copy: src=files/httpd.conf.template dest=/etc/httpd/conf/httpd.conf owner=root group=root mode=644
+    - name: create the vhost.d directory
+      file: path=/etc/httpd/vhost.d state=directory mode=644
+    - name: Copy and untar the source for the site
+      unarchive: src=files/sitecode.tar.gz dest=/var/www/sample
+    - name: Copy the default vhost config file
+      copy: src=files/default.conf.template dest=/etc/httpd/vhost.d/default.conf owner=root group=root mode=644
+    - name: Start the Web server
+      service: name=httpd state=started
+    - name: Test the web server
+      shell: curl http://vinayak.com
+      register: result
+    - name: Display result
+      debug: var=result
+      
+      
+
+
+
