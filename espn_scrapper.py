@@ -18,11 +18,11 @@ class App:
 		if not self.url is None:
 			personal_data,bowling_record,batting_record=self.parse_profile()
 			print ("Personal Data\n")
-			print (personal_data+"\n")
+			print (personal_data)
 			print ("Batting Record\n")
-			print (batting_record+"\n")
+			print (batting_record)
 			print ("Bowling Record\n")
-			print (bowling_record+"\n")
+			print (bowling_record)
 		else:
 			print("Player profile not found")
 			exit()
