@@ -1,26 +1,19 @@
-import urllib
-import json
+from geopy import geocoders
+from geopy import distance
+g = geocoders.GoogleV3(api_key='apikeygoeshere')
+inputAddress = '175 5th Ave, New York,  NY' 
+location = g.geocode(inputAddress, timeout=10)
+print(location.latitude, location.longitude)
+print(location.raw)
+print(location.address)
 
-serviceurl='http://maps.googleapis.com/maps/api/geocode/json?'
+_, start = g.geocode(u"Kanpur".encode('utf-8'))
+_, finish = g.geocode(u"Lucknow".encode('utf-8'))
+print distance.distance(start, finish)
 
-while True:
-    address=raw_input('Enter location:')
-    if len(address) < 1: break
-    url=serviceurl+urllib.urlencode({'sensor':'false','address':address})
-    print 'Retrieving',url
-    uh=urllib.urlopen(url)
-    data=uh.read()
-    print 'Retrieved',len(data),'charatcters'
-    try: js=json.loads(str(data))
-    except: js=None
-    if 'status' not in js or js['status'] !='OK':
-        print '===Failure to retrieve==='
-        print data
-        continue
-    print json.dumps(js,indent=4)
-    
-    lat=js["results"][0]["geometry"]["location"]["lat"]
-    lng=js["results"][0]["geometry"]["location"]["lng"]
-    print 'lat',lat,'lng',lng
-    location=js['results'][0]['formatted_address']
-    print location
+
+
+
+
+
+
