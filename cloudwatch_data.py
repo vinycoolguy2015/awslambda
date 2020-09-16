@@ -21,7 +21,7 @@ for region in regions:
                 namespace = 'AWS/EC2'
                 statistics = 'Average'
                 unit = 'Percent'
-                cw = boto.connect_cloudwatch(aws_access_key_id='AKIAJNXAUZTSGZPKYNXQ',aws_secret_access_key='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')
+                cw = boto.connect_cloudwatch(aws_access_key_id='',aws_secret_access_key='')
                 metrics = cw.list_metrics()
                 for metric in metrics :
                     if 'InstanceId' in metric.dimensions:
