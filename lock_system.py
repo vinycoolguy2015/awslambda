@@ -5,8 +5,8 @@ import sys
 import subprocess
 video_capture = cv2.VideoCapture(0)
 count=1
-known_image=face_recognition.load_image_file("/Users/viny/Downloads/Python/VK.jpg")
-#known_image=face_recognition.load_image_file("vinayak.jpg")
+#known_image=face_recognition.load_image_file("/Users/viny/Downloads/Python/VK.jpg")
+known_image=face_recognition.load_image_file("/Users/viny/Downloads/Python/vinayak.jpg")
 known_face_encoding = face_recognition.face_encodings(known_image)[0]
 found=False
 while count<3:
@@ -19,19 +19,20 @@ while count<3:
                 match = face_recognition.compare_faces([known_face_encoding], face_encoding)
                 if match[0]:
                         found=True
-                        print("Hey Vinayak")
+                        print("Hey Dude")
                         break
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                         if found==False:
-                                print("Not found")
+                                print("Unknown user")
                         break
-        except IndexError:
-                print("Not found")
-                subprocess.call('/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend',shell=True)
+        except:
+                print("Unknown user")
+                #subprocess.call('/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend',shell=True)
+                subprocess.call(['sh', '/Users/viny/Downloads/Python/lock_system.sh'])
                 sys.exit()
         if found==False:
-                print("Not found")
-                subprocess.call('/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend',shell=True)
-
+                print("Unknown user")
+                #subprocess.call('/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend',shell=True)
+                subprocess.call(['sh', '/Users/viny/Downloads/Python/lock_system.sh'])
 video_capture.release()
 cv2.destroyAllWindows()
