@@ -5,6 +5,7 @@ from googleapiclient import discovery
 client = container_v1.ClusterManagerClient()
 service = discovery.build('compute', 'v1')
 
+project_id = ''
 ip=[]
 
 #response = client.get_cluster(project_id,zone,cluster_name)
