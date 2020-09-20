@@ -32,7 +32,7 @@ def lambda_handler(event, context):
     previous_day=datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
     
     s3_client = boto3.client('s3')
-    s3_bucket='nissan-inventory'
+    s3_bucket='inventory'
     current_inventory_file=event['Records'][0]['s3']['object']['key']
     previous_day_inventory_file="EC2_Inventory_"+previous_day.split('-')[0]+"_"+previous_day.split('-')[1]+"_"+previous_day.split('-')[2]+".csv"
     output_file='/tmp/AddOrRemovedHost_report_'+datetime.today().strftime('%Y-%m-%d')+'.csv'
