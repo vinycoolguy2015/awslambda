@@ -1,0 +1,63 @@
+AsgProcessModificationRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyName: AsgProcessModification
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'autoscaling:ResumeProcesses'
+                  - 'autoscaling:SuspendProcesses'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: 'arn:aws:logs:*:*:*'
+  AsgProcessModifierFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Description: Modifies ASG processes during CF stack creation
+      Code:
+        ZipFile: |
+          import cfnresponse
+          import boto3
+          def handler(event, context):
+            props = event['ResourceProperties']
+            client = boto3.client('autoscaling')
+            try:
+              response = client.suspend_processes(AutoScalingGroupName=props['AutoScalingGroupName'],ScalingProcesses=['Launch','Terminate','HealthCheck','ReplaceUnhealthy'])
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+            except Exception as e:
+              cfnresponse.send(event, context, cfnresponse.FAILED, {})
+      Handler: index.handler
+      Role:
+        'Fn::GetAtt':
+          - AsgProcessModificationRole
+          - Arn
+      Runtime: python2.7
+  ModifyWebServerGroup:
+    Type: 'AWS::CloudFormation::CustomResource'
+    Condition: CreateWebServer
+    DependsOn: WebServerGroup 
+    Version: 1
+    Properties:
+      ServiceToken:
+        'Fn::GetAtt':
+          - AsgProcessModifierFunction
+          - Arn
+      AutoScalingGroupName:
+        Ref: WebServerGroup
+  
