@@ -1,7 +1,7 @@
 #####Instance CPUUtilization
 
 import boto3
-aws_access_key_id="",
+aws_access_key_id=""
 aws_secret_access_key=""
 
 ec2_client = boto3.client('autoscaling',region_name='eu-west-1')
