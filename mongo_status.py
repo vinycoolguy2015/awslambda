@@ -33,7 +33,7 @@ def lambda_handler(event, context):
    
     
     #connection = MongoClient(MONGO_HOST, MONGO_PORT)
-    connection=MongoClient("mongodb://172.25.4.xyz:27017,172.25.4.xyz:27017,172.25.4.xyz:27017/?replicaSet=rs_36")
+    connection=MongoClient("mongodb://172.25.4.xyz:27017,172.25.4.xyz:27017,172.25.4.xyz:27017/?replicaSet=rs_1")
     db = connection[MONGO_DB]
     replicaset_status=db.command("replSetGetStatus")
     
