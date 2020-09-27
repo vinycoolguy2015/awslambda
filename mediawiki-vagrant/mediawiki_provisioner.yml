@@ -1,0 +1,50 @@
+- hosts: localhost
+  connection: local
+  become: yes # This means that all tasks will be executed with sudo
+  tasks:
+  - name: Install EPEL
+    yum:
+      name:
+        - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        - http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+        - yum-utils
+      state: present
+  - name: Enable remi repo
+    shell: yum-config-manager --enable remi-php70
+  - name: Install PHP7
+    yum:
+      name:
+        - httpd
+        - php
+        - php-xml
+        - php-mcrypt
+        - php-cli
+        - php-gd
+        - php-curl
+        - php-mysql
+        - php-zip
+        - php-fileinfo
+        - php-mbstring
+      state: present
+  - name: Disable SELinux
+    selinux:
+      policy: targeted
+      state: permissive
+  - name: Download MediaWiki
+    get_url:
+      url: https://releases.wikimedia.org/mediawiki/1.31/mediawiki-1.31.1.tar.gz
+      dest: /tmp
+  - name: Extract MediaWiki into /var/www/html
+    unarchive:
+      src: /tmp/mediawiki-1.31.1.tar.gz
+      dest: /var/www/
+  - name: Remove /var/www/html
+    file:
+      path: /var/www/html
+      state: absent
+  - name: Move MediaWiki to /var/www/html
+    shell: /bin/mv /var/www/mediawiki-1.31.1 /var/www/html
+  - name: Restart httpd service
+    service:
+      name: httpd
+      state: started

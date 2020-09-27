@@ -1,0 +1,24 @@
+Vagrant.configure("2") do |config|
+  config.vm.define :alpha do |alpha|
+    alpha.vm.box = "centos/7"
+    alpha.vm.box_check_update = false
+    alpha.vm.network "private_network", ip: "10.0.0.10"
+    #alpha.vm.hostname = "mysql"
+    alpha.vm.provision "ansible_local" do | mysql|
+      mysql.playbook = "mysql_provisioner.yml"
+      mysql.limit = 'all,localhost'
+     
+    end
+  end
+
+  config.vm.define :beta do |beta|
+    beta.vm.box = "centos/7"
+    beta.vm.box_check_update = false
+    beta.vm.network "private_network", ip: "10.0.0.11"
+    #beta.vm.hostname = "mediawiki"
+    beta.vm.provision "ansible_local" do |mediawiki|
+       mediawiki.playbook = "mediawiki_provisioner.yml"
+       mediawiki.limit = 'all,localhost'
+    end
+  end
+end

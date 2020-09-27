@@ -1,0 +1,51 @@
+- hosts: localhost
+  connection: local
+  become: yes # This means that all tasks will be executed with sudo
+  tasks:
+  - name: Install EPEL
+    yum:
+      name:
+        - https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+        - https://mirror.webtatic.com/yum/el6/latest.rpm
+      state: present
+  - name: Uninstall mysql libs which may already be installed
+    yum:
+      name:
+        - mariadb-libs-1:5.5.60-1.el7_5.x86_64
+      state: absent
+  - name: Install MySQL 5.5
+    yum:
+      name:
+        - mysql55w
+        - mysql55w-server
+        - python-pip
+      state: present
+  - name: Install pymysql package
+    pip:
+      name: pymysql
+  - name: Start mysql service
+    service:
+      name: mysqld
+      state: started
+  - name: Set MySQL root password
+    shell: /usr/bin/mysqladmin -u root password 'password'
+  - name: Grant root user full access
+    shell: mysql -u root -ppassword -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+  - name: Create a new database with name wikidatabase
+    mysql_db:
+      name: wikidatabase
+      state: present
+      login_password: password
+  - name: Create wiki user
+    mysql_user:
+      login_password: password
+      name: wiki
+      host: '%'
+      password: '*5C88D3CB37D54B88E266864AE39842CCF38D90EB'
+      encrypted: yes
+      priv: 'wikidatabase.*:ALL'
+      state: present
+  - name: Restart mysql service
+    service:
+      name: mysqld
+      state: restarted
