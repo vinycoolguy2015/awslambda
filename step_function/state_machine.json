@@ -1,0 +1,57 @@
+{
+ "StartAt": "Create_AMI",
+ "States": {
+  "Create_AMI": {
+   "Type": "Task",
+   "Resource": "arn:aws:states:::lambda:invoke",
+   "Parameters": {
+    "FunctionName": "arn:aws:lambda:us-east-1:<account_id>:function:EC2_AMI:$LATEST",
+    "Payload": {
+     "Input.$": "$"
+    }
+   },
+   "Next": "Add_IAM_Role_And_SG"
+  },
+  "Add_IAM_Role_And_SG": {
+   "Type": "Parallel",
+   "Next": "Final State",
+   "Branches": [{
+     "StartAt": "Add_IAM_Role",
+     "States": {
+      "Add_IAM_Role": {
+       "Type": "Task",
+       "Resource": "arn:aws:states:::lambda:invoke",
+       "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-1:<account_id>:function:EC2_IAM:$LATEST",
+        "Payload": {
+         "Input.$": "$"
+        }
+       },
+                          "End": true
+      }
+     }
+    },
+    {
+     "StartAt": "Add_SG",
+     "States": {
+      "Add_SG": {
+       "Type": "Task",
+       "Resource": "arn:aws:states:::lambda:invoke",
+       "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-1:<account_id>:function:EC2_SG:$LATEST",
+        "Payload": {
+         "Input.$": "$"
+        }
+       },
+                          "End": true
+      }
+     }
+    }
+   ]
+  },
+  "Final State": {
+   "Type": "Pass",
+   "End": true
+  }
+ }
+}
