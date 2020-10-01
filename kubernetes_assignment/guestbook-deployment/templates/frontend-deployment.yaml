@@ -1,0 +1,30 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: {{ .Values.environment }}-frontend
+  labels:
+    app: guestbook
+spec:
+  selector:
+    matchLabels:
+      app: guestbook
+      tier: frontend
+  replicas: {{ pluck .Values.environment .Values.frontend_replica_count | first | default .Values.frontend_replica_count._default }}
+  template:
+    metadata:
+      labels:
+        app: guestbook
+        tier: frontend
+    spec:
+      containers:
+      - name: php-redis
+        image: gcr.io/google-samples/gb-frontend:v4
+        resources:
+          requests:
+            cpu: {{ pluck .Values.environment .Values.cpu | first | default .Values.cpu._default }}
+            memory: {{ pluck .Values.environment .Values.memory | first | default .Values.memory._default }}
+        env:
+        - name: GET_HOSTS_FROM
+          value: dns
+        ports:
+        - containerPort: 80

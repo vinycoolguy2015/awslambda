@@ -1,0 +1,29 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: {{ .Values.environment }}-redis-master
+  labels:
+    app: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: master
+        tier: backend
+    spec:
+      containers:
+      - name: master
+        image: k8s.gcr.io/redis:e2e  
+        resources:
+          requests:
+            cpu: {{ pluck .Values.environment .Values.cpu | first | default .Values.cpu._default }}
+            memory: {{ pluck .Values.environment .Values.memory | first | default .Values.memory._default }}
+        ports:
+        - containerPort: 6379

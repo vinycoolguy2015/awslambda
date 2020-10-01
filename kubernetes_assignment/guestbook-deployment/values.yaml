@@ -1,0 +1,17 @@
+environment: development
+
+cpu:
+  _default: 100m
+  prod: 200m
+  development: 100m
+
+
+memory:
+  _default: 100Mi
+  prod: 200Mi
+  development: 100Mi
+
+frontend_replica_count:
+  _default: 1
+  prod: 3
+  development: 2
