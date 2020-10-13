@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Attach IAM role to RDS
+Parameters:
+  ClusterIdentifier:
+    Type: String
+  ClusterRole:
+    Type: String
+Resources:
+  LambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'rds:AddRoleToDBCluster'
+                  - 'rds:DescribeDBClusters'
+                Resource: 
+                  !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:*
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: 'arn:aws:logs:*:*:*'
+              - Effect: Allow
+                Action:
+                  - 'iam:PassRole'
+                Resource: '*'
+  RDSIamFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Description: Attache IAM role to RDS instance
+      Timeout: 60
+      Code:
+        ZipFile: |
+          import cfnresponse
+          import boto3
+          import re
+          import sys
+          def handler(event, context):
+            props = event['ResourceProperties']
+            ClusterName=props['ClusterIdentifier']
+            RoleARN=props['ClusterRole']
+            client = boto3.client('rds')
+            try:
+              response = client.describe_db_clusters(DBClusterIdentifier=ClusterName)
+              if response['DBClusters'][0]['Status'] == "available":
+                 response = client.add_role_to_db_cluster(DBClusterIdentifier=ClusterName,RoleArn=RoleARN)
+                 cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+              else:
+                 print("Cluster not available for adding role")
+                 cfnresponse.send(event, context, cfnresponse.FAILED, {})
+            except Exception as e:
+              print(e)
+              cfnresponse.send(event, context, cfnresponse.FAILED, {})
+      Handler: index.handler
+      Role:
+        'Fn::GetAtt':
+          - LambdaExecutionRole
+          - Arn
+      Runtime: python3.7
+      
+  ModifyRDSInstance:
+    Type: 'AWS::CloudFormation::CustomResource'
+    DependsOn: RDSIamFunction
+    Version: 1
+    Properties:
+      ServiceToken:
+        'Fn::GetAtt':
+          - RDSIamFunction
+          - Arn
+      ClusterIdentifier:
+        Ref: ClusterIdentifier
+      ClusterRole:
+        Ref: ClusterRole
