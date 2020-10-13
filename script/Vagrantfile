@@ -1,0 +1,214 @@
+Problem:https://bitbucket.org/azneita/devops-challenge/src/e62b3527b4a7b0256ec0e05666e2c8d3be5495d1/devops-challenge.md?at=master&fileviewer=file-view-default
+
+Vagrantfile
+
+
+Vagrant.configure("2") do |config|
+
+  # Running standard Ubuntu 64 bits version
+
+  config.vm.box = "ubuntu/xenial64"
+
+  # Open ports for app
+
+  config.vm.network "forwarded_port", guest: 5000, host: 5000   # Node.js
+
+  # Create a private network, which allows host-only access to the machine
+
+  # using a specific IP.
+
+  config.vm.network "private_network", ip: "10.10.10.20"
+
+  config.vm.provider "virtualbox" do |vb|
+
+            vb.cpus = "2"
+
+        end
+
+  # Provision VM only once
+
+   config.vm.provision "ansible_local" do |a|
+
+   a.playbook = "provisioner.yml"
+
+  end
+
+end
+
+
+
+provisioner.yml
+
+- hosts: default
+
+  become: yes # This means that all tasks will be executed with sudo
+
+  tasks:
+
+   - name: Install Packages
+
+     apt:
+
+       name: "{{ item }}"
+
+       state: present
+
+       update_cache: yes
+
+     with_items:
+
+     - python
+
+     - nginx
+
+     - git
+
+     - python-pip
+
+   - name: Install pip packages
+
+     pip:
+
+       name: "{{ item }}"
+
+       executable: pip
+
+     with_items:
+
+     - virtualenv
+
+     - uwsgi
+
+     - flask
+
+   - name: Create directory
+
+     file:
+
+       path: /webapps/devops
+
+       state: directory
+
+       owner: www-data
+
+       group: www-data
+
+       mode: 0755
+
+   - name: download code
+
+     shell: git clone https://bitbucket.org/azneita/devops-challenge.git /webapps/devops
+
+   - name: Install dependencies
+
+     pip:
+
+       requirements: /webapps/devops/requirements.txt 
+
+   - name: Create uwsgi entry point
+
+     blockinfile:
+
+       path: /webapps/devops/app.ini
+
+       create: yes 
+
+       block: |
+
+         [uwsgi]
+
+         module = app:app
+
+
+
+         master = true
+
+         processes = 5
+
+
+
+         socket = /tmp/app.sock
+
+         chmod-socket = 666
+
+         vacuum = true
+
+         die-on-term = true
+
+   - name: Create uwsgi systemd file
+
+     blockinfile:
+
+       path: /etc/systemd/system/app.service 
+
+       create: yes
+
+       block: |
+
+         [Unit]
+
+         Description=uWSGI instance to serve app
+
+         After=network.target
+
+         [Service]
+
+         User=www-data
+
+         Group=www-data
+
+         WorkingDirectory=/webapps/devops
+
+         ExecStart=/usr/local/bin/uwsgi --ini app.ini
+
+         [Install]
+
+         WantedBy=multi-user.target
+
+   - name: Start app service
+
+     shell: systemctl start app;systemctl enable app
+
+   - name: Create nginx file
+
+     blockinfile:
+
+       path: /etc/nginx/sites-enabled/app
+
+       create: yes
+
+       block: |
+
+         server {
+
+           listen 5000;
+
+           server_name 10.10.10.20;
+
+           location / {
+
+             include uwsgi_params;
+
+             uwsgi_pass unix:/tmp/app.sock;}}
+
+   - name: restart Nginx
+
+     shell: ln -s /etc/nginx/sites-available/app /etc/nginx/sites-enabled;systemctl restart nginx
+
+   - name: Set up cron job for app monitoring
+
+     cron:
+
+       name: application monitoring
+
+       minute: "*"
+
+       hour: "*"
+
+       job: "sudo systemctl status app|grep running;if [ $? -ne 0 ] ; then sudo systemctl start app ;fi" 
+
+       state: present
+
+       user: vagrant
+
+
