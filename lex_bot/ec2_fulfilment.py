@@ -1,6 +1,6 @@
 import boto3
 
-def fullfilment_handler(event, context):
+def fulfilment_handler(event, context):
     client = boto3.client('ec2',region_name=event['sessionAttributes']['region'])
     volumeId = event['currentIntent']['slots']['instanceDetails']
     
