@@ -1,0 +1,205 @@
+{
+  "metadata": {
+    "schemaVersion": "1.0",
+    "importType": "LEX",
+    "importFormat": "JSON"
+  },
+  "resource": {
+    "name": "backupBot",
+    "version": "3",
+    "intents": [
+      {
+        "rejectionStatement": {
+          "messages": [
+            {
+              "contentType": "PlainText",
+              "content": "RDS snapshot creation cancelled."
+            }
+          ]
+        },
+        "name": "rdsSnapshot",
+        "version": "9",
+        "fulfillmentActivity": {
+          "codeHook": {
+            "uri": "arn:aws:lambda:us-east-1:xyz:function:rds_fulfilment",
+            "messageVersion": "1.0"
+          },
+          "type": "CodeHook"
+        },
+        "sampleUtterances": [
+          "Want to take RDS backup",
+          "Need to take RDS backup",
+          "Take RDS backup",
+          "Take RDS Snapshot"
+        ],
+        "slots": [
+          {
+            "sampleUtterances": [],
+            "slotType": "dbInstanceIdentifier",
+            "slotTypeVersion": "1",
+            "obfuscationSetting": "NONE",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "Please specify the instance identifier of the RDS instance."
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 2,
+            "name": "dbInstanceIdentifier"
+          },
+          {
+            "sampleUtterances": [],
+            "slotType": "region",
+            "slotTypeVersion": "1",
+            "obfuscationSetting": "NONE",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "Please specify the region where the RDS instance is running"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "name": "region"
+          }
+        ],
+        "confirmationPrompt": {
+          "messages": [
+            {
+              "contentType": "PlainText",
+              "content": "Are you sure you want to create the RDS snapshot?"
+            }
+          ],
+          "maxAttempts": 3
+        },
+        "dialogCodeHook": {
+          "uri": "arn:aws:lambda:us-east-1:xyz:function:rds_validation",
+          "messageVersion": "1.0"
+        }
+      },
+      {
+        "rejectionStatement": {
+          "messages": [
+            {
+              "contentType": "PlainText",
+              "content": "Snapshot creation cancelled."
+            }
+          ]
+        },
+        "name": "instanceSnapshot",
+        "version": "9",
+        "fulfillmentActivity": {
+          "codeHook": {
+            "uri": "arn:aws:lambda:us-east-1:xyz:function:ec2_fulfilment",
+            "messageVersion": "1.0"
+          },
+          "type": "CodeHook"
+        },
+        "sampleUtterances": [
+          "Take instance snapshot",
+          "Need to take instance snapshot",
+          "Want to take instance snapshot"
+        ],
+        "slots": [
+          {
+            "sampleUtterances": [],
+            "slotType": "instanceId",
+            "slotTypeVersion": "1",
+            "obfuscationSetting": "NONE",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "Specify the region where the instance is running"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "name": "instanceDetails"
+          }
+        ],
+        "confirmationPrompt": {
+          "messages": [
+            {
+              "contentType": "PlainText",
+              "content": "Are you sure you want to create the snapshot?"
+            }
+          ],
+          "maxAttempts": 3
+        },
+        "dialogCodeHook": {
+          "uri": "arn:aws:lambda:us-east-1:xyz:function:ec2_validation",
+          "messageVersion": "1.0"
+        }
+      }
+    ],
+    "slotTypes": [
+      {
+        "description": "instance id to create snapshot of",
+        "name": "instanceId",
+        "version": "1",
+        "enumerationValues": [
+          {
+            "value": "i-09506f30544e536ad",
+            "synonyms": []
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      },
+      {
+        "name": "dbInstanceIdentifier",
+        "version": "1",
+        "enumerationValues": [
+          {
+            "value": "qa-singapore",
+            "synonyms": []
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      },
+      {
+        "name": "region",
+        "version": "1",
+        "enumerationValues": [
+          {
+            "value": "us-east-1",
+            "synonyms": []
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      }
+    ],
+    "voiceId": "0",
+    "childDirected": false,
+    "locale": "en-US",
+    "idleSessionTTLInSeconds": 300,
+    "clarificationPrompt": {
+      "messages": [
+        {
+          "contentType": "PlainText",
+          "content": "Please say 'Take instance snapshot' to take instance snapshot or 'Take RDS snapshot' to take RDS snapshot"
+        }
+      ],
+      "maxAttempts": 5
+    },
+    "abortStatement": {
+      "messages": [
+        {
+          "contentType": "PlainText",
+          "content": "Sorry, I could not understand. Goodbye."
+        }
+      ]
+    },
+    "detectSentiment": false,
+    "enableModelImprovements": false
+  }
+}
