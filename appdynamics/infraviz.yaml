@@ -1,3 +1,117 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: appdynamics-infraviz
+  namespace: appdynamics
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: appdynamics-infraviz
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+spec:
+  privileged: true
+  allowPrivilegeEscalation: true
+  allowedCapabilities:
+  - '*'
+  volumes:
+  - '*'
+  hostNetwork: true
+  hostIPC: true
+  hostPID: true
+  hostPorts:
+  - min: 0
+    max: 65535
+  runAsUser:
+    rule: 'RunAsAny'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: appdynamics-infraviz
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - nodes
+  - events
+  - namespaces
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  - deployments
+  - replicasets
+  - daemonsets
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups: 
+  - "batch"
+  - "extensions"
+  resources: 
+  - "jobs"
+  verbs: 
+  - "get"
+  - "list"
+  - "watch"
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: appdynamics-infraviz
+subjects:
+- kind: ServiceAccount
+  name: appdynamics-infraviz
+  namespace: appdynamics
+roleRef:
+  kind: ClusterRole
+  name: appdynamics-infraviz
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: appdynamics-infraviz
+  namespace: appdynamics
+rules:
+- apiGroups:
+  - extensions
+  resources:
+  - podsecuritypolicies
+  resourceNames:
+  - appdynamics-infraviz
+  verbs:
+  - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: appdynamics-infraviz
+  namespace: appdynamics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: appdynamics-infraviz
+subjects:
+- kind: ServiceAccount
+  name: appdynamics-infraviz
+  namespace: appdynamics
+---
 apiVersion: appdynamics.com/v1alpha1
 kind: InfraViz
 metadata:
