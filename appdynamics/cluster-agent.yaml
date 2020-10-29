@@ -1,0 +1,31 @@
+apiVersion: appdynamics.com/v1alpha1
+kind: Clusteragent
+metadata:
+  name: k8s-cluster-agent
+  namespace: appdynamics
+spec:
+  appName: "openshift_prod"
+  controllerUrl: "https://xyz.com:443"
+  account: <account_name>
+  customSSLSecret: "ssl-cert"
+  # docker image info
+  image: "docker-registry.default.svc:5000/appdynamics/cluster-agent:20.7.0"
+  serviceAccountName: appdynamics-cluster-agent
+  ### Uncomment the following two lines if you need pull secrets
+  #imagePullSecrets:
+  #  name: "<your-docker-pull-secret-name>"
+  instrumentationMethod: Env
+  defaultAppName: App
+  nsToInstrumentRegex: project1|project2
+  resourcesToInstrument: [DeploymentConfig]
+  imageInfo:
+    java:
+      image: "docker-registry.default.svc:5000/appdynamics/java-agent:latest"
+      agentMountPath: /opt/appdynamics
+  instrumentationRules:
+    - namespaceRegex: project1|project2
+      env: JAVA_OPTIONS
+  netvizInfo:
+    bciEnabled: true
+    port: 3892
+
