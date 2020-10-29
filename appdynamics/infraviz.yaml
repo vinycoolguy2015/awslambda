@@ -1,0 +1,22 @@
+apiVersion: appdynamics.com/v1alpha1
+kind: InfraViz
+metadata:
+  name: appd-infraviz
+  namespace: appdynamics
+spec:
+  controllerUrl: "https://xyz.com:443"
+  image: "docker-registry.default.svc:5000/appdynamics/machine-agent-analytics:latest"
+  account: <account>
+  globalAccount: <global_account>
+  netVizImage: "docker-registry.default.svc:5000/appdynamics/machine-agent-netviz:latest"
+  netVizPort: 3892
+  enableDockerViz: "false"
+  enableMasters: true
+  stdoutLogging: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: "1G"
+    requests:
+      cpu: 200m
+      memory: "800M"
