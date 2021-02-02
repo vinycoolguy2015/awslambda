@@ -9,8 +9,6 @@ import time
 
 
 def lambda_handler(event, context):
-    print(event)
-    
     event_time=event['time']
     instance_id=event['detail']['instance-id']
     instance_state=event['detail']['state']
