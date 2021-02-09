@@ -6,7 +6,7 @@ export AWS_SECRET_ACCESS_KEY=''
 
 
 export terraform_provider_platform='linux_amd64'
-slack_url='https://hooks.slack.com/services/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'
+slack_url=''
 MESSAGE=''
 
 basedir=$(pwd)
