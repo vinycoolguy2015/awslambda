@@ -1,0 +1,44 @@
+#!/bin/bash
+
+export terraform_provider_platform='linux_amd64'
+export slack_url=$SLACK_URL
+
+basedir=$PWD
+
+echo "Current build is $BUILD_ID"
+
+curl -X POST -H 'Content-type: application/json' --data '{
+        "attachments": [
+            {
+             "color": "#9733EE",
+                "fields": [
+                    {
+                        "title": "Drift dection job triggered for Dev environment",
+                        "value": "'"Triggered drift check.You can check the build log at https://teamcityurl.com/viewLog.html?buildId=$BUILD_ID&buildTypeId=devops_TerraformDiffChecker&tab=buildLog"'",
+                        "short": "false",
+                    }
+                ]
+            }
+        ]
+    }' $slack_url
+
+for dir in $(find environments/qa -type d -maxdepth 2 -mindepth 2); do
+	cd $basedir/$dir
+	rm -rf /tmp/tf.plan
+	MESSAGE="No drift detected for $dir"
+	printf  '\nChecking Directory: %s \n' "$dir"
+	terragrunt init
+    terragrunt plan
+	if [ $? -ne 0 ];then
+    	MESSAGE="Terragrunt plan for $dir exited with non zero exit code.Please check for code or permission related issues by executing terragrunt plan manually."
+	else
+    	if terragrunt plan | grep "Terraform will perform the following actions";then
+        	MESSAGE="Drift detected for $dir."
+		fi
+	fi
+
+    
+    
+    curl -X POST -H 'Content-type: application/json' --data "{'text':'$MESSAGE'}" $slack_url
+    
+done
