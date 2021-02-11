@@ -2,10 +2,11 @@ import json
 import sys
 import random
 import urllib2
+import os
 if __name__ == '__main__':
-    url = ""
-    message = ("Python 2.7")
-    title = ("New Message")
+    url = os.environ['SLACK_URL']
+    message = sys.argv[1]
+    title = ("New Incoming Message")
     slack_data = {
         "attachments": [
             {
@@ -20,11 +21,14 @@ if __name__ == '__main__':
             }
         ]
     }
-    byte_length = str(sys.getsizeof(slack_data))
-    headers = {'Content-Type': "application/json", 'Content-Length': byte_length}
+    #byte_length = str(sys.getsizeof(slack_data))
+    #headers = {'Content-Type': "application/json", 'Content-Length': byte_length}
+    #response = requests.post(url, data=json.dumps(slack_data), headers=headers)
     req = urllib2.Request(url, data=json.dumps(slack_data))
-    response = urllib2.urlopen(req)
-    result = response.read()
-    print(result)
+    try:
+       response = urllib2.urlopen(req)
+    except:
+       print("Error sending message to Slack.Check if Slack Webhok URL is correct")
+       sys.exit(1)
     
 #Reference: https://medium.com/@sharan.aadarsh/sending-notification-to-slack-using-python-8b71d4f622f3
