@@ -42,3 +42,6 @@ for dir in $(find environments/qa -type d -maxdepth 2 -mindepth 2); do
     curl -X POST -H 'Content-type: application/json' --data "{'text':'$MESSAGE'}" $slack_url
     
 done
+
+#Now run docker run --rm --name diff_checker -e BUILD_ID -e SLACK_URL -v `pwd`:/apps alpine/terragrunt:0.12.17 /bin/bash -c 'apk add curl && ./terraform_drift_check.sh'
+#Where BUILD_IS is a teamcity environment variable with value %teamcity.build.id%
