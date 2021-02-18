@@ -17,6 +17,7 @@ case $commit_message in
     ;;
   *Minor*)
     minor_version=`expr $minor_version + 1`
+    patch_version=0
     ;;
   *PATCH*)
     patch_version=`expr $patch_version + 1`
