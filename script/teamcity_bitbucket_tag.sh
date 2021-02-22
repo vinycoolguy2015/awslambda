@@ -10,16 +10,16 @@ patch_version=$(echo $last_tag | cut -d '.' -f3)
 #Check if current commit is MAJOR/MINOR/PATCH
 shopt -s nocasematch
 case $commit_message in
-  *Major*)
+  *\[Major\]*)
     major_version=`expr $major_version + 1`
     minor_version=0
     patch_version=0
     ;;
-  *Minor*)
+  *\[Minor\]*)
     minor_version=`expr $minor_version + 1`
     patch_version=0
     ;;
-  *PATCH*)
+  *\[PATCH\]*)
     patch_version=`expr $patch_version + 1`
     ;;
   *)
