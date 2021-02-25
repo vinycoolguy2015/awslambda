@@ -11,3 +11,6 @@ variable "create_nat_routes" {
 variable "create_peering_routes" {
   default = false
 }
+variable "nacl_rules" {}
+
+variable "create_nacl_rules" {}
