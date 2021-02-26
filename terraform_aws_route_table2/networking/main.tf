@@ -115,6 +115,15 @@ resource "aws_default_network_acl" "default" {
     from_port  = 0
     to_port    = 0
   }
+
+
+lifecycle {
+    ignore_changes = [subnet_ids]
+  }
+
+tags = {
+    Name = join("_", [var.vpc_name,"default_nacl"])
+  }
 }
 
 resource "aws_network_acl_rule" "nacl_rules" {
