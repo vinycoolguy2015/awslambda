@@ -27,10 +27,11 @@ case $commit_message in
     exit 1
     ;;
 esac
-new_tag=v"$major_version.$minor_version.$patch_version"
+new_tag=v"$major_version.$minor_version.$patch_version.$BRANCH_NAME"
 echo "new tag will be $new_tag"
 echo "##teamcity[setParameter name='env.NEW_TAG' value='"$new_tag"']"
 
 #Add these environment variables in Teamcity build config
 #COMMIT_ID: %system.build.vcs.number%
 #NEW_TAG: Leave it as empty as we’ll populate it dynamically during build step.
+#BRANCH_NAME: %teamcity.build.branch%
