@@ -1,3 +1,5 @@
+#https://stackoverflow.com/questions/65334293/how-do-i-do-a-dynamic-route-in-aws-route-table
+
 data "aws_availability_zones" "available" {}
 
 resource "random_shuffle" "public_az" {
