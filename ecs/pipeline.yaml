@@ -3,16 +3,15 @@ Parameters:
   CodeBuildRole:
     Description: Code Build Role
     Type: String
-    Default: >-
-      arn:aws:iam::561660628307:role/service-role/code-build-ECSCloud-service-role
+    
   ClusterName:
     Description: ECS Cluster Name
     Type: String
-    Default: ECC-Cluster-Working-ECSCluster-MBS5UUPJ3G36
+   
   ServiceName:
     Description: ECS Service Name
     Type: String
-    Default: ECC-Cluster-Working-service-U3N7J8TBU2VB
+    
   FileName:
     Description: ECS file name
     Type: String
@@ -27,7 +26,7 @@ Parameters:
   RepositoryName:
     Description: GitHub repository name
     Type: String
-    Default: test
+    
   GitHubOwner:
     Type: String
 Resources:
