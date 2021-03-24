@@ -1,0 +1,24 @@
+subnet_count             = "2"
+vpc_cidr                 = "10.1.0.0/16"
+vpc_public_subnet_cidrs  = ["10.1.0.0/24", "10.1.1.0/24"]
+vpc_private_subnet_cidrs = ["10.1.2.0/24", "10.1.3.0/24"]
+aws_region               = "us-east-1"
+db_storage               = 10
+dbinstance_class         = "db.t3.small"
+dbuser                   = "root"
+dbpassword               = "Test1086#"
+rds_name                 = "application-rds"
+ami                      = "ami-b73b63a0"
+public_key_path          = "~/.ssh/id_rsa.pub"
+instance_type            = "t2.micro"
+highcpu                  = 75
+lowcpu                   = 40
+userdata                 = "../script.tpl"
+environments = {
+  environment1 = "Dev"
+  environment2 = "UAT"
+  environment3 = "Production"
+}
+repository_owner = "vinycoolguy2015"
+repository_name  = "nodejs-mysql-crud"
+github_token     = "e"
