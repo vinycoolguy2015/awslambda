@@ -1,0 +1,11 @@
+variable "vpcid" {}
+variable "lb_sg" {}
+variable "public_subnets" {}
+variable "private_subnets" {}
+variable "highcpu" {}
+variable "lowcpu" {}
+variable "ami" {}
+variable "instance_type" {}
+variable "instance_sg" {}
+variable "public_key_path" {}
+variable "userdata" {}

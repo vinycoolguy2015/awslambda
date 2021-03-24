@@ -1,0 +1,36 @@
+---
+- hosts: ec2
+  become: yes
+  remote_user: ec2-user
+  tasks:
+    - name: Install required packages
+      yum: 
+        name: ['httpd','mysql-server','tomcat8','curl','telnet','net-tools','java-1.8.0-openjdk'] 
+        state: present
+    
+    - name: Make apache root directory readable
+      file:
+        path: /var/www/html/
+        mode: u=rwX,g=rX,o=rX
+        recurse: yes
+        owner: apache
+        group: apache
+   
+    - name: Make sure Apache is started now and at boot.
+      service: 
+       name: httpd 
+       state:  started 
+       enabled: yes
+    
+    - name: Make sure MySQL is started now and at boot.
+      service: 
+       name: mysqld 
+       state:  started 
+       enabled: yes
+    
+    
+    - name: Make sure Tomcat is started now and at boot.
+      service: 
+       name: tomcat8
+       state:  started 
+       enabled: yes
