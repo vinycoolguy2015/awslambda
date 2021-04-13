@@ -1,0 +1,26 @@
+---
+- hosts: centos
+  become: yes
+  remote_user: centos
+  tasks:
+    - name: Copy Nginx source 
+      copy: src=/home/centos/nginx-1.18.0.tar.gz dest=/home/centos
+    - name: Extract Nginx source
+      ansible.builtin.unarchive:
+        src: nginx-1.18.0.tar.gz
+        dest: /home/centos
+    - name: Add Nginx user
+      ansible.builtin.user:
+        name: nginx
+        shell: /sbin/nologin
+    - name: Configure nginx
+      ansible.builtin.shell: "cd /home/centos/nginx-1.18.0 && ./configure --user=nginx --group=nginx"
+    - name: Build the default target
+      community.general.make:
+        chdir: /home/centos/nginx-1.18.0
+    - name: Run 'install' target as root
+      community.general.make:
+        chdir: /home/centos/nginx-1.18.0
+        target: install
+    - name: Start nginx
+      ansible.builtin.command: /usr/local/nginx/sbin/nginx
