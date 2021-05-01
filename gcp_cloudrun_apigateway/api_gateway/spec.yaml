@@ -13,7 +13,7 @@ paths:
       summary: Hi Service
       operationId: hello-v1
       x-google-backend:
-        address: https://app-432tdwh7ya-ue.a.run.app
+        address: https://CLOUD_RUN_URL
       responses:
         '200':
           description: OK
