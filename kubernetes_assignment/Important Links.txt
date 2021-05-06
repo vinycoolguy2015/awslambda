@@ -3,4 +3,4 @@ https://www.digitalocean.com/community/tutorials/how-to-set-up-an-elasticsearch-
 https://medium.com/better-programming/kubernetes-tips-ha-cluster-with-kubespray-69e5bb2fa444
 https://medium.com/@chris_linguine/how-to-monitor-your-kubernetes-cluster-with-prometheus-and-grafana-2d5704187fc8
 https://betterprogramming.pub/monitor-your-kubernetes-cluster-with-prometheus-and-grafana-1f7d0195e59 # Used this one
-https://www.digitalocean.com/community/tutorials/how-to-install-jenkins-on-kubernetes
+https://blog.knoldus.com/multibranch-pipelinewith-github-webhook/
