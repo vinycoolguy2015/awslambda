@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: php-redis
-        image: gcr.io/google-samples/gb-frontend:v4
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         resources:
           requests:
             cpu: {{ pluck .Values.environment .Values.cpu | first | default .Values.cpu._default }}
