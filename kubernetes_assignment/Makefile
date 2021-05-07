@@ -1,5 +1,5 @@
 #Parameters
-project='second-inquiry-309710'
+project=''
 
 #Targets
 create-kubernetes-cluster:
