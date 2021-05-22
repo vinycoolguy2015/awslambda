@@ -54,4 +54,6 @@ create-kubernetes-cluster:
 
 	#Install Jenkins
 	gcloud compute ssh --zone us-central1-a centos@kubernetes-master1 --command 'sudo kubectl apply -f jenkins.yaml'
+	gcloud compute scp --zone us-central1-a install_jenkins.sh centos@kubernetes-master1:/home/centos
+        gcloud compute ssh --zone us-central1-a centos@kubernetes-master1 --command 'chmod +x ./install_jenkins.sh && ./install_jenkins.sh'
 
