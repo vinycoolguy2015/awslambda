@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: docker-repo-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: /tmp/repository
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: registry
+  name: docker-repo-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---      
+apiVersion: v1
+kind: Pod
+metadata:
+  name: docker-registry-pod
+  namespace: registry
+  labels:
+    app: registry
+spec:
+  containers:
+  - name: registry
+    image: registry:2.6.2
+    volumeMounts:
+    - name: repo-vol
+      mountPath: "/var/lib/registry"
+    - name: certs-vol
+      mountPath: "/certs"
+      readOnly: true
+    - name: auth-vol
+      mountPath: "/auth"
+      readOnly: true
+    env:
+    - name: REGISTRY_AUTH
+      value: "htpasswd"
+    - name: REGISTRY_AUTH_HTPASSWD_REALM
+      value: "Registry Realm"
+    - name: REGISTRY_AUTH_HTPASSWD_PATH
+      value: "/auth/htpasswd"
+    - name: REGISTRY_HTTP_TLS_CERTIFICATE
+      value: "/certs/tls.crt"
+    - name: REGISTRY_HTTP_TLS_KEY
+      value: "/certs/tls.key"
+  volumes:
+  - name: repo-vol
+    persistentVolumeClaim:
+      claimName: docker-repo-pvc
+  - name: certs-vol
+    secret:
+      secretName: certs-secret
+  - name: auth-vol
+    secret:
+      secretName: auth-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-registry
+spec:
+  selector:
+    app: registry
+  ports:
+  - port: 5000
+    targetPort: 5000

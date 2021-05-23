@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: read-only-user
+  namespace: kubernetes-dashboard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: "true"
+  labels:
+  name: read-only-clusterrole
+  namespace: default
+rules:
+- apiGroups:
+  - ""
+  resources: ["*"]
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  resources: ["*"]
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources: ["*"]
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: read-only-binding
+roleRef:
+  kind: ClusterRole
+  name: read-only-clusterrole
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: read-only-user
+  namespace: kubernetes-dashboard

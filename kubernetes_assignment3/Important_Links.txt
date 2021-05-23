@@ -1,0 +1,3 @@
+https://upcloud.com/community/tutorials/deploy-kubernetes-dashboard/
+https://www.digitalocean.com/community/tutorials/how-to-install-jenkins-on-kubernetes
+https://medium.com/swlh/deploy-your-private-docker-registry-as-a-pod-in-kubernetes-f6a489bf0180
