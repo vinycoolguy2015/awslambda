@@ -1,19 +1,23 @@
-import json,traceback
+import json
+#import traceback
 from datetime import datetime, timedelta
 from botocore.vendored import requests
+import boto3
+
 
 
 def findVaccineSlotsAvailability(pinCodeList):    
     #Cowin URL
     url = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode='
+    client = boto3.client('sns',region_name='us-east-1')
 
-    #We will check the slots for one month
-    one_month_urls = list()
+    
+    urls = list()
     for pin in pinCodeList:
         current = datetime.today().strftime('%d-%m-%Y')
         tempUrl = url + pin + "&date="
-        for i in range(7,29,7):
-            one_month_urls.append(tempUrl+current)
+        for i in range(1,15):
+            urls.append(tempUrl+current)
             next_week = datetime.today() + timedelta(days=i)
             current = next_week.strftime('%d-%m-%Y')
 
@@ -22,26 +26,29 @@ def findVaccineSlotsAvailability(pinCodeList):
     slotFound = False
     #Create empty set to store the message to be sent
     message = set()
+    message.add("Vaccine Alert:::::")
 
-    for url in one_month_urls:
+    for url in urls:
         response = requests.get(url, headers=headers)
         data=json.loads(response.text)
-        
-        #print(data['centers'])
         
         for center in data['centers']:
             if 'sessions' in center:
                 for session in center['sessions']:
                     message.add("Pincode:"+str(center["pincode"])+" Center Name:"+str(center["name"]+" Date:"+session["date"]+" Minimum Age:"+str(session["min_age_limit"])+" Dose1 Capacity:"+str(session["available_capacity_dose1"])+" Dose2 Capacity:"+str(session["available_capacity_dose2"])))
                     slotFound = True                
-    print(message)
+    if slotFound:
+        client.publish(TargetArn="test",Message=str(message))        
+    else:        
+        print("No slot found.")
         
 def lambda_handler(event, context):
     try:    
-        pinCodeList=['209115']
+        pinCodeList=['xxxxxx']
         #Call the function with the desired pin code list
         findVaccineSlotsAvailability(pinCodeList)
         
         
     except Exception as e:
-        traceback.print_exc()
+        #traceback.print_exc()
+        print("Request errored out")
