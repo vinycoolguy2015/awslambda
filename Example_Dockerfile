@@ -1,0 +1,81 @@
+FROM debian:stable-slim
+
+WORKDIR /opt/oracle
+COPY ./instantclient_12_1/ .
+
+ARG oracle_home="/opt/oracle/instantclient_12_1"
+
+ENV PATH="${PATH}:/usr/lib/qt5/bin/" \
+    ORACLE_HOME=${oracle_home} \
+    LD_LIBRARY_PATH="${oracle_home}" \
+    PATH="${oracle_home}:${PATH}"\
+    PATHS_TO_REMOVE="\
+    /usr/include/* \
+    /usr/share/man/* \
+    /var/cache/apt/* \
+    ~/.cache/yarn/*"
+
+RUN apt update && \
+    apt install -y curl \
+                gnupg2 \
+                procps \
+                sudo \
+                vim \
+                libaio1 \
+                zip \
+                wget \
+                shared-mime-info \
+                git \
+                patch \ 
+                bzip2 \
+                gawk \ 
+                g++ \ 
+                gcc \ 
+                autoconf \ 
+                automake \ 
+                bison \ 
+                libc6-dev \ 
+                libffi-dev \  
+                libgdbm-dev \ 
+                libncurses5-dev \ 
+                libsqlite3-dev \ 
+                libtool \ 
+                libyaml-dev \ 
+                make \ 
+                patch \ 
+                pkg-config \ 
+                sqlite3 \ 
+                zlib1g-dev \ 
+                libgmp-dev \ 
+                libreadline-dev \ 
+                libssl-dev \
+                dbus && \                
+    apt clean all
+
+
+RUN unzip instantclient-basic-linux.x64-12.1.0.2.0.zip && \
+    unzip instantclient-sdk-linux.x64-12.1.0.2.0.zip && \
+    unzip instantclient-sqlplus-linux.x64-12.1.0.2.0.zip && \
+    rm -rf instantclient-basic-linux.x64-12.1.0.2.0.zip && \
+    rm -rf instantclient-sdk-linux.x64-12.1.0.2.0.zip && \
+    rm -rf instantclient-sqlplus-linux.x64-12.1.0.2.0.zip && \
+    ln -s libocci.so.12.1 ${ORACLE_HOME}/libocci.so && \
+    ln -s libclntsh.so.12.1 ${ORACLE_HOME}/libclntsh.so && \
+    ln -s libclntshcore.so.12.1 ${ORACLE_HOME}/libclntshcore.so && \
+    ln -s libsqora.so.12.1 ${ORACLE_HOME}/libsqora.so && \
+    mkdir -p instantclient_12_1/network/admin 
+
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN mkdir -p /var/lib/dbus/ \
+    && dbus-uuidgen > /var/lib/dbus/machine-id 
+RUN groupadd -g 1000 docker-user && \
+    useradd -m -r -u 1000 -g docker-user docker-user && \
+    touch /etc/sudoers.d/admin && \
+    echo "docker-user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/admin
+
+USER docker-user
+
+WORKDIR /
