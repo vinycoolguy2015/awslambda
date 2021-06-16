@@ -1,0 +1,17 @@
+#/etc/systemd/system/job.service
+
+[Unit]
+Description=Start job on bootup and stop job on shutdown
+After=passenger.service
+
+[Service]
+User=deploy
+Group=deploy
+Type=idle
+RemainAfterExit=yes
+WorkingDirectory=/apps/internet
+ExecStart=/bin/bash /apps/scripts/job_start.sh
+ExecStop=/bin/bash /apps/scripts/job_stop.sh
+
+[Install]
+WantedBy=multi-user.target
