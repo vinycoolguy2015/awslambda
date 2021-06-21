@@ -43,6 +43,8 @@ alpine/terragrunt:${TF_VERSION} hclfmt --terragrunt-check || { exit_status=$?;  
 docker run --rm  --entrypoint terraform -w /apps -v $(pwd):/apps \
 alpine/terragrunt:${TF_VERSION} fmt --recursive --check /apps/environments || { exit_status=$?;  printf "formating check has failed. \n"; }
 
+#SAST scanning
+docker run --rm -it -v "$(pwd):/environment" tfsec/tfsec /environment || { exit_status=$?;  printf "SAST check has failed. \n"; }
 
 if [[ $exit_status -ne 0 ]]; then
   printf "Terraform checks has failed. Exiting.\n"
