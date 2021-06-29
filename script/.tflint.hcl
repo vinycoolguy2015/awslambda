@@ -1,0 +1,5 @@
+config {
+  varfile = [
+    "tflint.tfvars"
+  ]
+}
