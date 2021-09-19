@@ -8,6 +8,12 @@ resource "aws_efs_file_system" "efs" {
    }
  }
 
+resource "aws_efs_backup_policy" "policy" {
+  file_system_id = aws_efs_file_system.efs.id
+  backup_policy {
+    status = "ENABLED"
+  }
+}
 
 resource "aws_efs_mount_target" "efs-mt" {
    count = length(data.aws_availability_zones.available.names)
