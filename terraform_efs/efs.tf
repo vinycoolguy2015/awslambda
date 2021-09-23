@@ -15,6 +15,48 @@ resource "aws_efs_backup_policy" "policy" {
   }
 }
 
+resource "aws_efs_file_system_policy" "efs_policy" {
+  file_system_id = aws_efs_file_system.efs.id
+  bypass_policy_lockout_safety_check = true
+  policy = <<POLICY
+{
+    "Version": "2012-10-17",
+    "Id": "EFS Policy",
+    "Statement": [
+        {
+            "Sid": "efs-policy-statement1",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": [
+                "elasticfilesystem:ClientWrite",
+                "elasticfilesystem:ClientMount"
+            ],
+            "Condition": {
+                "Bool": {
+                    "elasticfilesystem:AccessedViaMountTarget": "true"
+                }
+            }
+        },
+        {
+            "Sid": "efs-policy-statement2",
+            "Effect": "Deny",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": "*",
+            "Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "false"
+                }
+            }
+        }
+    ]
+}
+POLICY
+}
+
 resource "aws_efs_mount_target" "efs-mt" {
    count = length(data.aws_availability_zones.available.names)
    file_system_id  = aws_efs_file_system.efs.id
