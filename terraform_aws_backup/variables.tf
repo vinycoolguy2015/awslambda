@@ -1,0 +1,5 @@
+variable "key" {
+}
+
+variable "value" {
+}
