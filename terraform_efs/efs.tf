@@ -31,7 +31,8 @@ resource "aws_efs_file_system_policy" "efs_policy" {
             },
             "Action": [
                 "elasticfilesystem:ClientWrite",
-                "elasticfilesystem:ClientMount"
+                "elasticfilesystem:ClientMount",
+                "elasticfilesystem:ClientRootAccess"
             ],
             "Condition": {
                 "Bool": {
