@@ -1,0 +1,25 @@
+def lambda_handler(event, context):
+    import boto3
+    client = boto3.client('ssm')
+    instance_list=event['Input']['Payload']['instance_list']
+    command_id=event['Input']['Payload']['commandId']
+    target_filter=event['Input']['Payload']['target_filter']
+    for instance in instance_list:
+        scan_completed="False"
+        print(command_id,instance)
+        response = client.get_command_invocation(CommandId=command_id,InstanceId=instance)
+        command_execution_status = response['Status']
+        if command_execution_status == "Success":
+            scan_completed="True"
+        elif command_execution_status == "Failed":
+            scan_completed="Failed"
+        else:
+            break
+            
+        
+    return{
+        'patch_scan_status': scan_completed,
+        'commandId': command_id,
+        'instance_list': instance_list,
+        'target_filter': target_filter
+    }
