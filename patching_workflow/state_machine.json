@@ -54,8 +54,53 @@
     "Payload": {
      "Input.$": "$"
     }},
-   "Next": "Create_AMI"
+   "Next": "Execute_Command"
   },
+   "Execute_Command": {
+   "Type": "Task",
+   "Resource": "arn:aws:states:::lambda:invoke",
+   "Parameters": {
+    "FunctionName": "arn:aws:lambda:us-east-1:<aws_account_id>:function:execute_command:$LATEST",
+    "Payload": {
+     "Input.$": "$"
+    }
+   },
+   "Next": "Wait_For_Command_Execution"
+  },
+   "Wait_For_Command_Execution": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "Check_Command_Execution_Status"
+    },
+   
+   
+  "Check_Command_Execution_Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-1:<aws_account_id>:function:command_execution_status:$LATEST",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "Next": "Is_Command_Execution_Completed"
+    },
+    "Is_Command_Execution_Completed": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Payload.command_executed",
+          "StringEquals": "True",
+          "Next": "Create_AMI"
+        },
+        {
+          "Variable": "$.Payload.command_executed",
+          "StringEquals": "Failed",
+          "Next": "Patching_Status"
+        }
+      ],
+      "Default": "Wait_For_Command_Execution"
+    },
    "Create_AMI": {
    "Type": "Task",
     "Resource": "arn:aws:states:::lambda:invoke",
