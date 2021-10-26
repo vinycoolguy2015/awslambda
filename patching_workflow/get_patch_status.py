@@ -3,6 +3,7 @@ def lambda_handler(event, context):
     client = boto3.client('ssm')
     instance_list=event['Input']['Payload']['instance_list']
     target_filter=event['Input']['Payload']['target_filter']
+    command=event['Input']['Payload']['command']
     response = client.describe_instance_patch_states(InstanceIds=instance_list)
 
     #Get Patch details
@@ -30,5 +31,6 @@ def lambda_handler(event, context):
         
     return{
     'instance_list': instance_list,
-    'target_filter': target_filter
+    'target_filter': target_filter,
+    'command': command
         }
