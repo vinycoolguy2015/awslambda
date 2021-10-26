@@ -5,10 +5,12 @@ def lambda_handler(event, context):
     ec2_client = boto3.client('ec2')
     instance_list=[]
     target_filter=event['Input']['Target']
+    command=event['Input']['Command']
     
     # Scan for patches
 
     response=ssm_client.send_command(
+        #InstanceIds=['i-0871c740183ca201e'],
         Targets=[target_filter],
         DocumentName='AWS-RunPatchBaseline',
         DocumentVersion='$LATEST',
@@ -21,7 +23,7 @@ def lambda_handler(event, context):
                         'NoReboot'
                           ]
                 },
-        OutputS3BucketName='code-bucket'
+        OutputS3BucketName='codepipeline-us-east-1-175848680181'
         )
     
     commandId=response['Command']['CommandId']
@@ -37,7 +39,8 @@ def lambda_handler(event, context):
     return{
         'commandId': commandId,
         'instance_list': instance_list,
-        'target_filter': target_filter
+        'target_filter': target_filter,
+        'command': command
     }
     
     
