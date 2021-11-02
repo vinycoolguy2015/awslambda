@@ -1,0 +1,90 @@
+[
+      {
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/microservice-demo",
+            "awslogs-region": "us-east-1",
+            "awslogs-stream-prefix": "/pop"
+          }
+        },
+        "portMappings": [
+              {
+                  "protocol": "tcp",
+                  "containerPort": 80
+              }
+          ],
+          "environment": [
+              {
+                  "name": "PORT",
+                  "value": "80"
+              }
+          ],
+          "memory": 128,
+          "image": "808658323399.dkr.ecr.us-east-1.amazonaws.com/springbootapp:popapp",
+          "essential": true,
+          "name": "popapp"
+      },
+      {
+          "name": "envoy",
+          "image": "840364872350.dkr.ecr.us-east-1.amazonaws.com/aws-appmesh-envoy:v1.12.3.0-prod",
+          "user": "1337",
+          "memoryReservation": 128,
+          "essential": true,
+          "environment": [
+            {
+              "name": "APPMESH_VIRTUAL_NODE_NAME",
+              "value": "mesh/jukebox-mesh/virtualNode/pop-service-vn"
+            },
+            {
+              "name": "ENABLE_ENVOY_XRAY_TRACING",
+              "value": "1"
+            },
+            {
+              "name": "ENABLE_ENVOY_STATS_TAGS",
+              "value": "1"
+            },
+	    {
+	      "name": "ENVOY_LOG_LEVEL",
+	      "value": "debug"
+	   } 
+          ],
+          "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+              "awslogs-group": "/ecs/microservice-demo",
+              "awslogs-region": "us-east-1",
+              "awslogs-stream-prefix": "/pop/envoy"
+            }
+          },
+          "healthCheck": {
+            "command": [
+              "CMD-SHELL",
+              "curl -s http://localhost:9901/server_info | grep state | grep -q LIVE"
+            ],
+            "interval": 5,
+            "timeout": 2,
+            "retries": 3
+          }
+        },
+      {
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/microservice-demo",
+            "awslogs-region": "us-east-1",
+            "awslogs-stream-prefix": "/pop/xray"
+          }
+        },
+        "portMappings": [
+          {
+            "protocol": "udp",
+            "containerPort": 2000
+          }
+        ],
+        "cpu": 32,
+        "memoryReservation": 256,
+        "image": "808658323399.dkr.ecr.us-east-1.amazonaws.com/springbootapp:aws-xray-daemon",        
+        "name": "xray-daemon"
+      }
+  ]
