@@ -1,0 +1,200 @@
+{
+ "StartAt": "Run_Patch_Baseline",
+ "States": {
+  "Run_Patch_Baseline": {
+   "Type": "Task",
+   "Resource": "arn:aws:states:::lambda:invoke",
+   "Parameters": {
+    "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_id}:function:run_patch_baseline_in_scan_mode",
+    "Payload": {
+     "Input.$": "$"
+    }
+   },
+   "Next": "Wait_For_Patch_Scan"
+  },
+   "Wait_For_Patch_Scan": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "Check_Patch_Scan_Status"
+    },
+   
+   
+  "Check_Patch_Scan_Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_id}:function:check_patch_scan_status",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "Next": "Is_Patch_Scan_Completed"
+    },
+    "Is_Patch_Scan_Completed": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Payload.patch_scan_status",
+          "StringEquals": "True",
+          "Next": "Patch_Status"
+        },
+        {
+          "Variable": "$.Payload.patch_scan_status",
+          "StringEquals": "Failed",
+          "Next": "Patching_Status"
+        }
+      ],
+      "Default": "Wait_For_Patch_Scan"
+    },
+  "Patch_Status": {
+   "Type": "Task",
+    "Resource": "arn:aws:states:::lambda:invoke",
+   "Parameters": {
+    "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_id}:function:get_patch_status",
+    "Payload": {
+     "Input.$": "$"
+    }},
+   "Next": "Execute_Command"
+  },
+   "Execute_Command": {
+   "Type": "Task",
+   "Resource": "arn:aws:states:::lambda:invoke",
+   "Parameters": {
+    "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_id}:function:execute_command",
+    "Payload": {
+     "Input.$": "$"
+    }
+   },
+   "Next": "Wait_For_Command_Execution"
+  },
+   "Wait_For_Command_Execution": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "Check_Command_Execution_Status"
+    },
+   
+   
+  "Check_Command_Execution_Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_id}:function:check_command_execution_status",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "Next": "Is_Command_Execution_Completed"
+    },
+    "Is_Command_Execution_Completed": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Payload.command_executed",
+          "StringEquals": "True",
+          "Next": "Create_AMI"
+        },
+        {
+          "Variable": "$.Payload.command_executed",
+          "StringEquals": "Failed",
+          "Next": "Patching_Status"
+        }
+      ],
+      "Default": "Wait_For_Command_Execution"
+    },
+   "Create_AMI": {
+   "Type": "Task",
+    "Resource": "arn:aws:states:::lambda:invoke",
+   "Parameters": {
+    "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_id}:function:create_ami",
+    "Payload": {
+     "Input.$": "$"
+    }},
+   "Next": "Wait_For_AMI"
+  },
+   "Wait_For_AMI": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "Check_AMI_Status"
+    },
+   
+   
+  "Check_AMI_Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_id}:function:check_ami_status",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "Next": "Is_AMI_Created"
+    },
+    "Is_AMI_Created": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Payload.ami_created",
+          "StringEquals": "True",
+          "Next": "Start_Patching"
+        }
+      ],
+      "Default": "Wait_For_AMI"
+    },
+    "Start_Patching": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_id}:function:patch_instance",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "Next": "Wait_For_Patch_Installation"
+    },
+   "Wait_For_Patch_Installation": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "Check_Patch_Installation_Status"
+    },
+   
+   
+  "Check_Patch_Installation_Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_id}:function:check_patch_installation_status",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "Next": "Is_Patch_Installation_Completed"
+    },
+    "Is_Patch_Installation_Completed": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Payload.patch_installation_status",
+          "StringEquals": "True",
+          "Next": "Patching_Status"
+        },
+        {
+          "Variable": "$.Payload.patch_installation_status",
+          "StringEquals": "Failed",
+          "Next": "Patching_Status"
+        }
+      ],
+      "Default": "Wait_For_Patch_Installation"
+    },
+   "Patching_Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_id}:function:patching_completion_status",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "End": true
+    }
+  }
+}
