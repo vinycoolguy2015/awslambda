@@ -15,9 +15,9 @@ def lambda_handler(event, context):
         response=ssm_client.describe_instance_patch_states(InstanceIds=[instance])
         #if response['ComplianceItems'][0]['Status'] == 'COMPLIANT':
         if response['InstancePatchStates'][0]['MissingCount'] > 0:
-            message.append(instance_name[0]+"("+instance+") not patched.\n ")
+            message.append(instance_name[0]+"("+instance+") not patched.\n")
         else:
-            message.append(instance_name[0]+"("+instance+") patched.\n ")
+            message.append(instance_name[0]+"("+instance+") patched.\n")
         
     
     sns_client.publish(TopicArn=os.environ['SNS_TOPIC'], Message=''.join(message) ,Subject="Patching Status")
