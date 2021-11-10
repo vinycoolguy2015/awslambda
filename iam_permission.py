@@ -26,18 +26,21 @@ def write_data_to_excel(worksheet,user,permission,policytype):
     if 'Action' in permission:
         if isinstance(permission['Action'], (list)):
             worksheet.write('C'+str(row),'\n'.join(permission['Action']),text_format)
-        elif isinstance(permission['Action'].encode('ascii'), (str)):
+        #elif isinstance(permission['Action'].encode('ascii'), (str)):
+        else:
             worksheet.write('C'+str(row),permission['Action'],text_format)
     elif 'NotAction' in permission:
         if isinstance(permission['NotAction'], (list)):
             worksheet.write('D'+str(row),'\n'.join(permission['NotAction']),text_format)
-        elif isinstance(permission['NotAction'].encode('ascii'), (str)):
+        #elif isinstance(permission['NotAction'].encode('ascii'), (str)):
+        else:
             worksheet.write('D'+str(row),permission['NotAction'],text_format)
         
                                                 
     if isinstance(permission['Resource'], (list)):
         worksheet.write('E'+str(row),'\n'.join(permission['Resource']),text_format)
-    elif isinstance(permission['Resource'].encode('ascii'), (str)):
+    #elif isinstance(permission['Resource'].encode('ascii'), (str)):
+    else:
         worksheet.write('E'+str(row),permission['Resource'],text_format)
     
     if 'Condition' in permission:
