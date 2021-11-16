@@ -11,7 +11,8 @@ TFLINT_VERSION=${TFLINT_VERSION:-0.24.1}
 TF_VERSION=${TF_VERSION:-0.13.6}
 TFLINT_CONFIG=$(cat .tflint.hcl)
 
-docker pull wata727/tflint:${TFLINT_VERSION}
+#docker pull wata727/tflint:${TFLINT_VERSION}
+docker pull ghcr.io/terraform-linters/tflint:latest
 # docker pull hashicorp/terraform:${TF_VERSION:-0.12.7}
 docker pull alpine/terragrunt:${TF_VERSION} # includes terragrunt
 
