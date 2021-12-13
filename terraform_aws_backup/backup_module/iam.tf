@@ -1,9 +1,8 @@
-data "aws_iam_policy_document" "example-aws-backup-service-assume-role-policy-doc" {
+data "aws_iam_policy_document" "aws-backup-service-assume-role-policy" {
   statement {
     sid     = "AssumeServiceRole"
     actions = ["sts:AssumeRole"]
     effect  = "Allow"
-
     principals {
       type        = "Service"
       identifiers = ["backup.amazonaws.com"]
@@ -26,7 +25,7 @@ data "aws_caller_identity" "current_account" {}
  See https://stackoverflow.com/questions/61802628/aws-backup-missing-permission-iampassrole */
 data "aws_iam_policy_document" "example-pass-role-policy-doc" {
   statement {
-    sid       = "ExamplePassRole"
+    sid       = "PassRole"
     actions   = ["iam:PassRole"]
     effect    = "Allow"
     resources = ["arn:aws:iam::${data.aws_caller_identity.current_account.account_id}:role/*"]
@@ -34,27 +33,23 @@ data "aws_iam_policy_document" "example-pass-role-policy-doc" {
 }
 
 /* Roles for taking AWS Backups */
-resource "aws_iam_role" "example-aws-backup-service-role" {
-  name               = "ExampleAWSBackupServiceRole"
+resource "aws_iam_role" "aws-backup-service-role" {
+  name               = "AWSBackupServiceRole"
   description        = "Allows the AWS Backup Service to take scheduled backups"
-  assume_role_policy = data.aws_iam_policy_document.example-aws-backup-service-assume-role-policy-doc.json
-
-  tags = {
-    Role = "iam"
-  }
+  assume_role_policy = data.aws_iam_policy_document.aws-backup-service-assume-role-policy.json
 }
 
-resource "aws_iam_role_policy" "example-backup-service-aws-backup-role-policy" {
+resource "aws_iam_role_policy" "backup-service-aws-backup-role-policy" {
   policy = data.aws_iam_policy.aws-backup-service-policy.policy
-  role   = aws_iam_role.example-aws-backup-service-role.name
+  role   = aws_iam_role.aws-backup-service-role.name
 }
 
-resource "aws_iam_role_policy" "example-restore-service-aws-backup-role-policy" {
+resource "aws_iam_role_policy" "restore-service-aws-backup-role-policy" {
   policy = data.aws_iam_policy.aws-restore-service-policy.policy
-  role   = aws_iam_role.example-aws-backup-service-role.name
+  role   = aws_iam_role.aws-backup-service-role.name
 }
 
-resource "aws_iam_role_policy" "example-backup-service-pass-role-policy" {
+resource "aws_iam_role_policy" "backup-service-pass-role-policy" {
   policy = data.aws_iam_policy_document.example-pass-role-policy-doc.json
-  role   = aws_iam_role.example-aws-backup-service-role.name
+  role   = aws_iam_role.aws-backup-service-role.name
 }
