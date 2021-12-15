@@ -40,7 +40,7 @@ resource "aws_backup_plan" "backup-plan" {
   }
 }
 
-resource "aws_backup_selection" "example-server-backup-selection" {
+resource "aws_backup_selection" "backup-selection" {
   iam_role_arn = aws_iam_role.aws-backup-service-role.arn
   name         = "backup_resourcesi"
   plan_id      = aws_backup_plan.backup-plan.id
