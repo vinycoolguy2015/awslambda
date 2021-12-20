@@ -1,7 +1,7 @@
-key               = "Name"
-value             = "database"
-backup_vault_name = "test"
-sns_topic_arn     = "arn:aws:sns:us-east-1:xyz:patching"
+key               = "Backup"
+value             = "True"
+backup_vault_name = "backup_vault"
+sns_topic_arn     = "<SNS_TOPIC_ARN>"
 rules = [{
   name                     = "daily_snapshot"
   schedule                 = "cron(40 6 ? * MON-SAT *)"
