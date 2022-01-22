@@ -1,0 +1,45 @@
+{
+    "variables": {
+        "aws_access_key": "AKIA3YR6KY7DT2P",
+        "aws_secret_key": "trg4yXgNBVtsXDHDa/Q0NxVu",
+        "aws_subnet_id": "subnet-1e2109",
+	"environment": ""
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "access_key": "{{user `aws_access_key`}}",
+            "secret_key": "{{user `aws_secret_key`}}",
+            "region": "us-east-1",
+            "subnet_id": "{{user `aws_subnet_id`}}",
+            "source_ami_filter": {
+                "filters": {
+                    "virtualization-type": "hvm",
+                    "name": "amzn2-ami-kernel-5.10-hvm-2.0.20211223.0-x86_64-gp2",
+                    "root-device-type": "ebs"
+                },
+                "owners": ["137112412989"],
+                "most_recent": true
+            },
+            "security_group_filter": {
+                "filters": {
+                    "tag:Class": "packer"
+                }
+            },
+            "instance_type": "t2.micro",
+            "ssh_username": "ec2-user",
+            "ami_name": "amazon-test_{{timestamp}}"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "ansible",
+            "playbook_file": "./cloudwatch.yml",
+	          "extra_arguments": ["-e", "appian_environment={{user `appian_environment`}}"]
+
+        }
+    ]
+}
+
+#packer validate packer.json
+#packer build -var 'appian_environment=ci' packer.json
