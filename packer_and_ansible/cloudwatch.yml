@@ -1,0 +1,7 @@
+- name: Install CloudWatch Agent
+  hosts: all
+  become: yes
+  vars:
+    appian_environment: "{{ appian_environment }}"
+  roles:
+    - { role: cloudwatch }
