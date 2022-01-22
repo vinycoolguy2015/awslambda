@@ -1,0 +1,17 @@
+- name: Install CloudWatch Agent
+  become: yes
+  package: 
+    name: amazon-cloudwatch-agent
+    state: present
+
+- name: Create CloudWatch Agent Configuration File
+  template:
+    src: amazon-cloudwatch-agent.json.j2
+    dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+    mode: 0644
+  
+- name: Start Cloudwatch Agent Service
+  ansible.builtin.service:
+    name: amazon-cloudwatch-agent.service
+    state: started
+    enabled: yes
