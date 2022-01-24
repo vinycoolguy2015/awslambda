@@ -7,3 +7,6 @@ variable "appian_environment" {
 Change extra_arguments to 
 
 "appian_environment=var.appian_environment"
+
+Then execute 
+packer validate -var 'appian_environment=ci' packer.json
