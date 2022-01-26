@@ -1,0 +1,5 @@
+- name: Install CloudWatch Agent
+  hosts: all
+  become: yes
+  roles:
+    - { role: cloudwatch }
