@@ -13,6 +13,7 @@ resource "aws_instance" "project-iac" {
   associate_public_ip_address = true
   key_name = "dev"
   user_data = data.template_file.ec2userdata_script.rendered
+  iam_instance_profile = "CloudWatch_Custom" # Change this
   vpc_security_group_ids = [
     "sg-0e30f07a59"
   ]
