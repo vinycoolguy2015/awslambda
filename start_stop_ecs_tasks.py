@@ -13,3 +13,6 @@ def lambda_handler(event, context):
             elif event['action']=='start':
                 client.update_service(cluster=cluster,service=service,desiredCount=1)
                 print("Started service "+service)
+                
+                
+#Now create a CloudWatch schedule trigger. Provide lambda as target and under configure input, select constanct(JSON text) and provide {"action":"start"}
