@@ -1,0 +1,12 @@
+variable "vpc_name" {}
+variable "vpc_cidr" {}
+variable "private_subnet" {}
+variable "public_subnet" {}
+variable "ecs_cluster_name" {}
+variable "ecs_service_name" {}
+variable "docker_image_url" {}
+variable "memory" {}
+variable "docker_container_port" {}
+variable "desired_task_number" {}
+variable "cpu" {}
+variable "env_name" {}
