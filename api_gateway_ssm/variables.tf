@@ -1,5 +1,5 @@
 variable "vpc_id" {
-  default = "vpc-6a691717"
+  default = "vpc-6a69"
 }
 
 variable "vpc_cidr_block" {
@@ -7,5 +7,5 @@ variable "vpc_cidr_block" {
 }
 
 variable "subnet_id" {
-  default = "subnet-82a486e4"
+  default = "subnet-82a4"
 }
