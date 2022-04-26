@@ -18,7 +18,8 @@ def lambda_handler(event, context):
             for page in paginator['Parameters']:
                 params.append(page['Name'])
             return {'statusCode': 200,'body': json.dumps(params)}
-    except:
+    except Exception as e:
+        print(e)
         return {'statusCode': 500,'body': json.dumps("Error fetching parameter value.May be parameter name is incorrect or you do not have permission to access it.")}
         
 
