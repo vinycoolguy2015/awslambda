@@ -1,5 +1,5 @@
 terraform {
-  source = "../modules/ssm"
+  source = "./modules/Sam"
 
   # Remember to set ANSIBLE_VAULT_PASSWORD_FILE
   before_hook "vault_decrypt" {
