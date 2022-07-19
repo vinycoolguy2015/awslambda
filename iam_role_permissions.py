@@ -38,7 +38,7 @@ while True:
                 managed_policy_doc=''
                 managed_policy=''
                 worksheet.write('A'+str(row),role_name)
-                worksheet.write('B'+str(row),json.dumps(assume_role_policy_doc))
+                worksheet.write('B'+str(row),json.dumps(assume_role_policy_doc,indent=2))
                 get_managed_policies=iam.list_attached_role_policies(RoleName=role_name)
                 get_inline_policies=iam.list_role_policies(RoleName=role_name)
                 if len(get_managed_policies['AttachedPolicies'] )> 0:
@@ -53,14 +53,14 @@ while True:
                             managed_policy=policy_version['PolicyVersion']['Document']['Statement']
                             worksheet.write('C'+str(row),'CustomerManagedPolicy')
                             worksheet.write('D'+str(row),policy['PolicyName'])
-                            worksheet.write('E'+str(row),json.dumps(managed_policy))
+                            worksheet.write('E'+str(row),json.dumps(managed_policy,indent=2))
                             row=row+1
 		if len(get_inline_policies['PolicyNames']) > 0:
                     for policy in get_inline_policies['PolicyNames']:
                         worksheet.write('C'+str(row),'CustomerManagedPolicy')
                         worksheet.write('D'+str(row),policy)
                         policy_doc = iam.get_role_policy(RoleName=role_name,PolicyName=policy)	
-                        worksheet.write('E'+str(row),json.dumps(policy_doc['PolicyDocument']))
+                        worksheet.write('E'+str(row),json.dumps(policy_doc['PolicyDocument'],indent=2))
                         row=row+1
     try:
          marker = page['Marker']
