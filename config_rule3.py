@@ -39,12 +39,14 @@ def lambda_handler(event, context):
                             for cidr in ip['IpRanges']:
                                 if cidr['CidrIp']=='0.0.0.0/0':
                                     print("Revoking public access to port "+str(ip['FromPort']) +" for security group "+security_group_id)
-                                    EC2_CLIENT.revoke_security_group_ingress(GroupId=security_group_id, IpPermissions=[ip])
+                                    #EC2_CLIENT.revoke_security_group_ingress(GroupId=security_group_id, IpPermissions=[ip])
+                                    EC2_CLIENT.revoke_security_group_ingress(GroupId=security_group_id,IpPermissions=[{'FromPort': ip['FromPort'],'IpProtocol': ip['IpProtocol'],'IpRanges': [{'CidrIp': '0.0.0.0/0'}],'ToPort': ip['ToPort']}])
                                     send_email("Security Group Notification","Revoked public access to port "+str(ip['FromPort']) +" for security group "+security_group_id)
                         elif ip['IpProtocol']=="-1":
                             for cidr in ip['IpRanges']:
                                 if cidr['CidrIp']=='0.0.0.0/0':
                                     print("Revoking public access to on all ports for security group "+security_group_id)
-                                    EC2_CLIENT.revoke_security_group_ingress(GroupId=security_group_id, IpPermissions=[ip])
+                                    #EC2_CLIENT.revoke_security_group_ingress(GroupId=security_group_id, IpPermissions=[ip])
+                                    EC2_CLIENT.revoke_security_group_ingress(GroupId=security_group_id,IpPermissions=[{'IpProtocol': ip['IpProtocol'],'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}])
                                     send_email("Security Group Notification","Revoked public access to all ports for security group "+security_group_id)
                             
