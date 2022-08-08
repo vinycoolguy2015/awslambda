@@ -50,7 +50,7 @@ while True:
 			else:
                             managed_policy_doc=iam.get_policy(PolicyArn=policy['PolicyArn'])
                             policy_version = iam.get_policy_version(PolicyArn = policy['PolicyArn'], VersionId = managed_policy_doc['Policy']['DefaultVersionId'])
-                            managed_policy=policy_version['PolicyVersion']['Document']['Statement']
+                            managed_policy=policy_version['PolicyVersion']['Document']
                             worksheet.write('C'+str(row),'CustomerManagedPolicy')
                             worksheet.write('D'+str(row),policy['PolicyName'])
                             worksheet.write('E'+str(row),json.dumps(managed_policy,indent=2))
