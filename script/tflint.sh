@@ -23,7 +23,7 @@ for dir in $(find modules ! -path modules -type d); do
   printf  '\nChecking Directory: %s \n' "$dir"
   echo  "| TFLINT CHECK: directory: $dir |"
   echo "$TFLINT_CONFIG" > .tflint_config
-  docker run --rm  --workdir /data -v $(pwd):/data wata727/tflint:${TFLINT_VERSION} --config .tflint_config $dir || { exit_status=$?; printf "tflint check has failed. \n"; }
+  docker run --rm  --workdir /data -v $(pwd):/data ghcr.io/terraform-linters/tflint:latest --config .tflint_config $dir || { exit_status=$?; printf "tflint check has failed. \n"; }
   rm .tflint_config
   # echo "exit status in TFLINT if $exit_status"
     
