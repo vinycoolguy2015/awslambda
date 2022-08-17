@@ -5,7 +5,6 @@ resource "aws_lb" "test_aws_alb" {
   security_groups            = [aws_security_group.lb-sg.id]
   subnets                    = var.application_subnets
   drop_invalid_header_fields = true
-  enable_deletion_protection = true
 }
 
 resource "aws_lb_listener" "test_lb_listener_main" {
