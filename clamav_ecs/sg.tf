@@ -4,15 +4,15 @@ resource "aws_security_group" "clamav-sg" {
   vpc_id      = var.vpc_id
 }
 
-#resource "aws_security_group_rule" "clamav-sg-egress" {
-#  type        = "egress"
-#  description = "Security Group for Clamav"
-#  from_port   = 443
-#  to_port     = 443
-#  protocol    = "tcp"
-#  cidr_blocks       = ["0.0.0.0/0"]
-#  security_group_id = aws_security_group.clamav-sg.id
-#}
+resource "aws_security_group_rule" "clamav-sg-egress" {
+  type              = "egress"
+  description       = "Security Group for Clamav"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.clamav-sg.id
+}
 
 resource "aws_security_group_rule" "clamav-sg-ingress" {
   type                     = "ingress"
