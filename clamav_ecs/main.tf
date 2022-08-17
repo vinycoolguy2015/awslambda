@@ -10,7 +10,7 @@ resource "aws_cloudwatch_log_group" "log_group" {
   name              = "clamav-logs"
 }
 
-resource "aws_ecs_task_definition" "internet_task_definition" {
+resource "aws_ecs_task_definition" "clamav_task_definition" {
   family = "ecs-clamav-task-defn"
   container_definitions = jsonencode([
     {
@@ -74,16 +74,16 @@ resource "aws_ecs_task_definition" "internet_task_definition" {
       }]
   }])
   requires_compatibilities = ["EC2", "FARGATE"]
-  execution_role_arn       =  aws_iam_role.internet_ecs_task_execution_iam_role.arn
+  execution_role_arn       =  aws_iam_role.clamav_ecs_task_execution_iam_role.arn
   cpu                      = 2048
   memory                   = 4096
   network_mode             = "awsvpc"
 }
 
-resource "aws_ecs_service" "internet_service" {
+resource "aws_ecs_service" "clamav_service" {
   name                              = "ecs-clamav-service"
   cluster                           = aws_ecs_cluster.fargate-cluster.id
-  task_definition                   = aws_ecs_task_definition.internet_task_definition.arn
+  task_definition                   = aws_ecs_task_definition.clamav_task_definition.arn
   desired_count                     = 1
   launch_type                       = "FARGATE"
   health_check_grace_period_seconds = 300
@@ -111,13 +111,13 @@ resource "aws_ecs_service" "internet_service" {
 resource "aws_appautoscaling_target" "ecs_target" {
   max_capacity       =  3
   min_capacity       =  1
-  resource_id        = "service/${aws_ecs_cluster.fargate-cluster.name}/${aws_ecs_service.internet_service.name}"
+  resource_id        = "service/${aws_ecs_cluster.fargate-cluster.name}/${aws_ecs_service.clamav_service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
 
 
-resource "aws_appautoscaling_policy" "internet_memory_policy" {
+resource "aws_appautoscaling_policy" "clamav_memory_policy" {
   name               = "ecs-clamav-memory-autoscaling-policy"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
@@ -133,7 +133,7 @@ resource "aws_appautoscaling_policy" "internet_memory_policy" {
   }
 }
 
-resource "aws_appautoscaling_policy" "internet_cpu_policy" {
+resource "aws_appautoscaling_policy" "clamav_cpu_policy" {
   name               = "ecs-clamav-cpu-autoscaling-policy"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
