@@ -1,4 +1,4 @@
-resource "aws_iam_role" "internet_ecs_task_execution_iam_role" {
+resource "aws_iam_role" "clamav_ecs_task_execution_iam_role" {
   name  = "iam-role-clamav-ecs-task-exe"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -50,5 +50,5 @@ Resource = "*"
 
 resource "aws_iam_role_policy_attachment" "aws-ecs-task-exe-policy" {
   policy_arn = aws_iam_policy.aws-ecs-task-exe-policy.arn
-  role       = aws_iam_role.internet_ecs_task_execution_iam_role.name
+  role       = aws_iam_role.clamav_ecs_task_execution_iam_role.name
 }
