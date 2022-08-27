@@ -6,3 +6,7 @@ module "backup" {
   rules             = var.rules
   sns_topic_arn     = var.sns_topic_arn
 }
+
+module "backup_audit" {
+  source = "./backup_audit"
+}
