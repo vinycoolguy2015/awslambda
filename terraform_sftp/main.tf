@@ -48,7 +48,7 @@ resource "aws_iam_role_policy" "logging" {
 POLICY
 }
 
-resource "aws_transfer_server" "osg" {
+resource "aws_transfer_server" "sftp" {
   endpoint_type          = "VPC"
   protocols              = ["SFTP"]
   identity_provider_type = "SERVICE_MANAGED"
@@ -143,7 +143,7 @@ POLICY
 
 resource "aws_transfer_user" "this" {
   for_each       = var.sftp_users
-  server_id      = aws_transfer_server.osg.id
+  server_id      = aws_transfer_server.sftp.id
   user_name      = each.key
   home_directory = "/${var.bucket_name}/${each.value}"
   role           = aws_iam_role.user[each.key].arn
@@ -151,7 +151,7 @@ resource "aws_transfer_user" "this" {
 
 resource "aws_transfer_ssh_key" "this" {
   for_each   = var.sftp_users_ssh_key
-  server_id  = aws_transfer_server.osg.id
+  server_id  = aws_transfer_server.sftp.id
   user_name  = each.key
   body       = each.value
   depends_on = [aws_transfer_user.this]
@@ -159,7 +159,7 @@ resource "aws_transfer_ssh_key" "this" {
 
 resource "null_resource" "get-endpoint-dns" {
   provisioner "local-exec" {
-    command = "aws ec2 describe-vpc-endpoints --vpc-endpoint-ids ${aws_transfer_server.osg.endpoint_details[0].vpc_endpoint_id} --query 'VpcEndpoints[*].DnsEntries[0].DnsName'| jq .[0] > /tmp/dns.txt"
+    command = "aws ec2 describe-vpc-endpoints --vpc-endpoint-ids ${aws_transfer_server.sftp.endpoint_details[0].vpc_endpoint_id} --query 'VpcEndpoints[*].DnsEntries[0].DnsName'| jq .[0] > /tmp/dns.txt"
   }
 }
 
