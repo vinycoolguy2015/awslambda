@@ -12,6 +12,7 @@ response = client.generate_credential_report()
 completion_status=response['State']
 while completion_status != "COMPLETE":
     time.sleep(5)
+    response = client.generate_credential_report()
     completion_status=response['State']
 response = client.get_credential_report()
 with open("creds.csv", 'w') as csvFile:
