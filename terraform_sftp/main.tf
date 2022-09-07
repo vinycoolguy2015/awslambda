@@ -159,7 +159,7 @@ resource "aws_transfer_ssh_key" "this" {
 
 resource "null_resource" "get-endpoint-dns" {
   provisioner "local-exec" {
-    command = "aws ec2 describe-vpc-endpoints --vpc-endpoint-ids ${aws_transfer_server.sftp.endpoint_details[0].vpc_endpoint_id} --query 'VpcEndpoints[*].DnsEntries[0].DnsName'| jq .[0] |tr -d '\n'|tr -d '\"'> /tmp/zone.txt"> /tmp/dns.txt"
+    command = "aws ec2 describe-vpc-endpoints --vpc-endpoint-ids ${aws_transfer_server.sftp.endpoint_details[0].vpc_endpoint_id} --query 'VpcEndpoints[*].DnsEntries[0].DnsName'| jq .[0] |tr -d '\n'|tr -d '\"'> /tmp/dns.txt"
   }
 }
 
