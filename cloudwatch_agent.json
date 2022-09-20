@@ -1,0 +1,104 @@
+{
+    "agent": {
+        "logfile": "/var/logs/amazon-cloudwatch-agent.log",
+        "region": "ap-southeast-1"
+    },
+    "logs": {
+        "logs_collected": {
+            "files": {
+                "collect_list": [
+                    
+                    {
+                        "file_path": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
+                        "log_group_name": "/{{ agency_code }}/{{ project_code }}/{{ tags['Environment'] }}/{{ tags['Zone'] }}/logs/amazon-cloudwatch-agent.log"
+                    },
+                    {
+                        "file_path": "/var/log/audit/audit.log",
+                        "log_group_name": "/{{ agency_code }}/{{ project_code }}/{{ tags['Environment'] }}/{{ tags['Zone'] }}/logs/audit/audit.log"
+                    },
+                    {
+                        "file_path": "/var/log/message",
+                        "log_group_name": "/{{ agency_code }}/{{ project_code }}/{{ tags['Environment'] }}/{{ tags['Zone'] }}/logs/message"
+                    },
+                    {
+                        "file_path": "/var/log/secure",
+                        "log_group_name": "/{{ agency_code }}/{{ project_code }}/{{ tags['Environment'] }}/{{ tags['Zone'] }}/logs/secure"
+                    },
+                    {
+                        "file_path": "/var/log/faillog",
+                        "log_group_name": "/{{ agency_code }}/{{ project_code }}/{{ tags['Environment'] }}/{{ tags['Zone'] }}/logs/faillog"
+                    },
+                    {
+                        "file_path": "/var/log/cron",
+                        "log_group_name": "/{{ agency_code }}/{{ project_code }}/{{ tags['Environment'] }}/{{ tags['Zone'] }}/logs/cron"
+                    },
+                    {
+                        "file_path": "/var/log/yum.log",
+                        "log_group_name": "/{{ agency_code }}/{{ project_code }}/{{ tags['Environment'] }}/{{ tags['Zone'] }}/logs/yum.log"
+                    },
+                    {
+                        "file_path": "/var/log/sudo.log",
+                        "log_group_name": "/{{ agency_code }}/{{ project_code }}/{{ tags['Environment'] }}/{{ tags['Zone'] }}/logs/sudo.log"
+                    }
+                ]
+            }
+        }
+    },
+      "metrics": {
+                "aggregation_dimensions": [
+                        [
+                                "InstanceId"
+                        ]
+                ],
+                "append_dimensions": {
+                        "InstanceId": "${aws:InstanceId}"
+                        
+                },
+                "metrics_collected": {
+                        "cpu": {
+                                "measurement": [
+                                        "cpu_usage_idle",
+                                        "cpu_usage_iowait",
+                                        "cpu_usage_user",
+                                        "cpu_usage_system"
+                                ],
+                                "metrics_collection_interval": 60,
+                                "resources": [
+                                        "*"
+                                ],
+                                "totalcpu": false
+                        },
+                        "disk": {
+                                "measurement": [
+                                        "used_percent",
+                                        "inodes_free"
+                                ],
+                                "metrics_collection_interval": 60,
+                                "resources": [
+                                        "*"
+                                ]
+                        },
+                        "diskio": {
+                                "measurement": [
+                                        "io_time"
+                                ],
+                                "metrics_collection_interval": 60,
+                                "resources": [
+                                        "*"
+                                ]
+                        },
+                        "mem": {
+                                "measurement": [
+                                        "mem_used_percent"
+                                ],
+                                "metrics_collection_interval": 60
+                        },
+                        "swap": {
+                                "measurement": [
+                                        "swap_used_percent"
+                                ],
+                                "metrics_collection_interval": 60
+                        }
+                }
+        }
+}
