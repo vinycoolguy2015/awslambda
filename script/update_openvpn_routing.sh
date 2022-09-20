@@ -12,12 +12,12 @@ if test -f "$FILE"; then
         else
             for ip in $previous_ip_address
                 do
-                    rule_number=/usr/local/openvpn_as/scripts/sacli  ConfigQuery | grep $ip/32 | cut -d "\"" -f2 | cut -d "." -f5
+                    rule_number=`/usr/local/openvpn_as/scripts/sacli ConfigQuery | grep $ip/32 | cut -d "\"" -f2 | cut -d "." -f5`
                     /usr/local/openvpn_as/scripts/sacli --key "vpn.server.routing.private_network.$rule_number" --value "$ip/32" ConfigDel
                 done
             for ip in $current_ip_address
                 do
-                    current_rule_count=`/usr/local/openvpn_as/scripts/ConfigQuery | grep vpn.server.routing.private_network | wc -l`
+                    current_rule_count=`/usr/local/openvpn_as/scripts/sacli ConfigQuery | grep vpn.server.routing.private_network | wc -l`
                     /usr/local/openvpn_as/scripts/sacli --key "vpn.server.routing.private_network.$current_rule_count" --value "$ip/32" ConfigPut
                 done
             /usr/local/openvpn_as/scripts/sacli start
