@@ -5,7 +5,7 @@ import urllib3
 
 
 def lambda_handler(event, context):
-    url='https://<API_ID>-<VPC_ENDPOINT_ID>.execute-api.<REGION>.amazonaws.com/<STAGE>'
+    url='https://<APIB_ID>-<VPCB_ENDPOINT_ID>.execute-api.<REGION>.amazonaws.com/<STAGE>'
     #url='https://gchfgu2bc7-vpce-0933719f0c5622cd5.execute-api.us-east-2.amazonaws.com/test'
 
     # Two way to have http method following if lambda proxy is enabled or not
