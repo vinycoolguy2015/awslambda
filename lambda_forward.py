@@ -5,19 +5,16 @@ import urllib3
 
 
 def lambda_handler(event, context):
-    #print(event)
-    #url='https://<APIB_ID>-<VPCB_ENDPOINT_ID>.execute-api.<REGION>.amazonaws.com/<STAGE>'
-    url='https://6sb2e45qf6-vpce-089cbdba2a177f7cd.execute-api.us-east-2.amazonaws.com/test'
+    url='https://<API_ID>-<VPC_ENDPOINT_ID>.execute-api.<REGION>.amazonaws.com/<STAGE>'
+    #url='https://gchfgu2bc7-vpce-0933719f0c5622cd5.execute-api.us-east-2.amazonaws.com/test'
 
     # Two way to have http method following if lambda proxy is enabled or not
     if event.get('httpMethod'):
         http_method = event['httpMethod']
     else:
         http_method = event['requestContext']['http']['method']
-    path=event.get('path').split('/internet')[1]
-    
+
     headers = ''
-    queryStringParameters=''
     if event.get('headers'):
         headers = event['headers']
 
@@ -41,13 +38,10 @@ def lambda_handler(event, context):
     body = ''
     if event.get('body'):
         body = event['body']
-    if event.get('queryStringParameters'):
-        queryStringParameters=event['queryStringParameters']
-    
 
     try:
         http = urllib3.PoolManager()
-        resp = http.request(method=http_method, url=url+path, headers=headers,fields=queryStringParameters,
+        resp = http.request(method=http_method, url=url, headers=headers,
                             body=body)
 
         body = {
