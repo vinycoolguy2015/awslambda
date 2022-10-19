@@ -1,7 +1,7 @@
 1-Create a VPC with Public and Private Subnets. For Private Subnets create VPC Endpoints for 
 - com.amazonaws.us-east-2.execute-api
 - com.amazonaws.us-east-2.ssm
-- com.amazonaws.us-east-2.ec2messages # Might not require this
+- com.amazonaws.us-east-2.ec2messages # Might not be required
 - com.amazonaws.us-east-2.ssmmessages 
 
 2-Launch an instance in Public Subnet With Amazon Linux 2 Image and Setup Nginx proxy with https://www.baeldung.com/nginx-forward-proxy.
