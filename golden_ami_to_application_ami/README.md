@@ -28,6 +28,7 @@ VALUES ('us-east-1', 'AmazonLinux2','ami-0b5eea76982371e91' ,'2022-12-01','2022-
    ImageDate DATE,   
    PRIMARY KEY (ImageId )
 );
+```
 
 2- Create a secret named db in Secret Manager and store following information:
 ```
@@ -37,6 +38,7 @@ dbname	test
 host	<RDS_ENDPOINT>
 port	3306
 ```
+
 3-Create an IAM Role for Lambda(lambda.amazonaws.com) and Step Function(states.amazonaws.com) with full admin permission(in a production environment, grant granular access instead of Admin access).
 
 4-Create a CloudFormation stack named Pipeline using image_builder.yml.Change the values for SubnetId and VpcId in the template. This will create a image builder pipeline which we can use for creating application AMI.
