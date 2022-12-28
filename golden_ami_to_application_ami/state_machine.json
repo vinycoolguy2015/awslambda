@@ -1,0 +1,162 @@
+{
+  "Comment": "This is your state machine",
+  "StartAt": "Get Golden AMI ID",
+  "States": {
+    "Get Golden AMI ID": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:<ACCOUNT_ID>:function:get_ami_id:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Check Golden AMI Availability"
+    },
+    "Check Golden AMI Availability": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.golden_ami_id",
+          "StringEquals": "No Records found",
+          "Next": "Golden AMI Not Available"
+        }
+      ],
+      "Default": "Update CFT Stack"
+    },
+    "Golden AMI Not Available": {
+      "Type": "Pass",
+      "End": true
+    },
+    "Update CFT Stack": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:<ACCOUNT_ID>:function:update_cft_stack:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Check CFT Update Status"
+    },
+    "Check CFT Update Status": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Stack_Status",
+          "StringEquals": "Failed",
+          "Next": "CFT Not Updated"
+        }
+      ],
+      "Default": "Trigger Image Pipeline"
+    },
+    "CFT Not Updated": {
+      "Type": "Pass",
+      "End": true
+    },
+    "Trigger Image Pipeline": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:<ACCOUNT_ID>:function:trigger_image_pipeline:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Wait For Application Image Creation"
+    },
+    "Wait For Application Image Creation": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "Check Application Image Status"
+    },
+    "Check Application Image Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:<ACCOUNT_ID>:function:check_image_status:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Is Application Image Available"
+    },
+    "Is Application Image Available": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.status",
+          "StringEquals": "application ami available",
+          "Next": "Store Application AMI ID In Database"
+        }
+      ],
+      "Default": "Wait For Application Image Creation"
+    },
+    "Store Application AMI ID In Database": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:<ACCOUNT_ID>:function:store_application_ami_id:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "End": true
+    }
+  }
+}
