@@ -39,7 +39,7 @@ port	3306
 ```
 3-Create an IAM Role for Lambda(lambda.amazonaws.com) and Step Function(states.amazonaws.com) with full admin permission(in a production environment, grant granular access instead of Admin access).
 
-4-Create an Image Builder Pipeline using image_pipeline.yml
+4-Create a CloudFormation stack named Pipeline using image_builder.yml.Change the values for SubnetId and VpcId in the template. This will create a image builder pipeline which we can use for creating application AMI.
 
 5-Create state machine using definition given in state_machine.json. Replace <ACCOUNT_ID> with your AWS Account ID.
 
