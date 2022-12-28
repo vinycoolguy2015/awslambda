@@ -43,6 +43,6 @@ port	3306
 
 5-Create state machine using definition given in state_machine.json. Replace <ACCOUNT_ID> with your AWS Account ID.
 
-5-
+6-Create following Lambda functions:
 
 
