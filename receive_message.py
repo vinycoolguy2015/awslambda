@@ -42,5 +42,5 @@ while True:
             )
             autoscaling.set_instance_protection(InstanceIds=[instance_id],AutoScalingGroupName=AUTOSCALING_GROUP_NAME,ProtectedFromScaleIn=False)
 
-        else:
-            logging.info("Queue is now empty")
+    else:
+        logging.info("Queue is now empty")
