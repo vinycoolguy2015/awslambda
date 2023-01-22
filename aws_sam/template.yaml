@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An example SAM template for Lambda Safe Deployments.
+
+Resources:
+
+  returnS3Buckets:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: returnS3Buckets.lambda_handler
+      Runtime: python3.9
+      AutoPublishAlias: live
+      Policies:
+        - Version: "2012-10-17"
+          Statement: 
+          - Effect: "Allow"
+            Action: 
+              - "s3:ListAllMyBuckets"
+            Resource: '*'
+      DeploymentPreference:
+          Type: Linear10PercentEvery1Minute
+          Hooks:
+            PreTraffic: !Ref preTrafficHook
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /test
+            Method: get
+
+  preTrafficHook:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: preTrafficHook.lambda_handler
+      Policies:
+        - Version: "2012-10-17"
+          Statement: 
+          - Effect: "Allow"
+            Action: 
+              - "codedeploy:PutLifecycleEventHookExecutionStatus"
+            Resource:
+              !Sub 'arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentgroup:${ServerlessDeploymentApplication}/*'
+        - Version: "2012-10-17"
+          Statement: 
+          - Effect: "Allow"
+            Action: 
+              - "lambda:InvokeFunction"
+            Resource: !Ref returnS3Buckets.Version
+      Runtime: python3.9
+      FunctionName: 'CodeDeployHook_preTrafficHook'
+      DeploymentPreference:
+        Enabled: false
+      Timeout: 30
+      Environment:
+        Variables:
+          NewVersion: !Ref returnS3Buckets.Version
