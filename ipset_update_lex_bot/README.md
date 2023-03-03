@@ -1,5 +1,5 @@
 1-  In the bot defintion, there is a section
-"slotTypes": [
+``` "slotTypes": [
       {
         "description": "instance id to create snapshot of",
         "name": "ipsetName",
@@ -23,7 +23,7 @@
         ],
         "valueSelectionStrategy": "ORIGINAL_VALUE"
       }
-    ],
+    ], ```
 Here you need to name matching your IPSet name and add values for IPv6 format also.
 2-  Import the definition using Lex V1 console.
 3-  Grant Lex permisison to invoke Lambda
