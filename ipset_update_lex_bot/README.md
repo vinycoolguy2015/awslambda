@@ -29,6 +29,7 @@ Here you need to name matching your IPSet name and add values for IPv6 format al
 2-  Import the definition using Lex V1 console.
 
 3-  Grant Lex permisison to invoke Lambda
+  
   ``` aws lambda add-permission --function-name ipset_validation --statement-id chatbot-fulfillment1 --action "lambda:InvokeFunction" --principal "lex.amazonaws.com" --region us-west-2
   aws lambda add-permission --function-name ipset_fulfilment --statement-id chatbot-fulfillment2 --action "lambda:InvokeFunction" --principal "lex.amazonaws.com" --region us-west-2 ```
   
