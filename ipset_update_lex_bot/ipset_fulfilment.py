@@ -29,7 +29,7 @@ def fulfilment_handler(event, context):
   
     else: 
         current_address.append(address_to_add+'/128')
-        client.update_ip_set(Name=ipset_to_update,Scope='CLOUDFRONT',Id=ipset_id,Addresses=current_address,LockToken=ipset_lock_token)
+        client.update_ip_set(Name=ipsetname,Scope='CLOUDFRONT',Id=ipset_id,Addresses=current_address,LockToken=ipset_lock_token)
   
         response = {
             "dialogAction": {
