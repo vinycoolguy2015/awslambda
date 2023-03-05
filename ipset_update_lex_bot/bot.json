@@ -104,6 +104,10 @@
           {
             "value": "10.0.0.0",
             "synonyms": []
+          },
+          {
+            "value": "2a09:bac5:55fc:15f::23:3ef",
+            "synonyms": []
           }
         ],
         "valueSelectionStrategy": "ORIGINAL_VALUE"
