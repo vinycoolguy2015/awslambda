@@ -3,7 +3,7 @@ resource "aws_wafv2_web_acl" "this" {
   scope = "CLOUDFRONT"
 
   default_action {
-    block {}
+    allow {}
   }
   dynamic "rule" {
     for_each = var.enable_geo == true ? [1] : []
