@@ -11,7 +11,7 @@ environment_id=`curl --silent --insecure --header "Content-Type: application/jso
 deployment_status=`curl --silent --insecure --header "Content-Type: application/json" --header "Authorization: Bearer NJjBrN58" --request GET --url https://bamboo.com/rest/api/latest/deploy/environment/$environment_id/results?max-results=1|jq '.results[0]'`
     
 deployment_start_date=`echo $deployment_status|jq '.startedDate'`
-deployment_status=`echo $deployment_status|jq '.deploymentState'`
+deployment_status=`echo $deployment_status|jq '.deploymentState'|tr -d '"'`
 
 while [ $deployment_status != "SUCCESS" ]
 do
