@@ -1,0 +1,62 @@
+service: sls-aws
+frameworkVersion: '3'
+
+plugins:
+  - serverless-plugin-canary-deployments
+  - serverless-stage-manager #https://github.com/jeremydaly/serverless-stage-manager
+  - serverless-prune-plugin
+  - serverless-associate-waf
+  - serverless-provisioned-concurrency-autoscaling
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: us-east-1
+  memorySize: 512
+  timeout: 30
+  stage: ${opt:stage, 'stg'}
+  tracing:
+    lambda: true # Equivalent to 'Active'
+    apiGateway: true
+  logs:
+    restApi: true
+  apiGateway:
+    disableDefaultEndpoint: true
+  versionFunctions: true
+
+
+custom:
+  # serverless-prune-plugin
+  prune:
+    automatic: true
+    number: 3
+  # serverless-stage-manager
+  stages:
+    - stg
+    - prd
+  # serverless-associate-waf
+  associateWaf:
+    name: api-${self:provider.stage}-waf
+    version: V2 # Regional or V2
+  
+  #provisionedConcurrency:
+    #getVersion:
+      #stg:
+        #min: 1
+        #max: 3
+      #prd:
+        #min: 5
+        #max: 60
+functions:
+  getVersion:
+    handler: handler.getVersion
+    events:
+      - http:
+           path: /get-version
+           method: get
+    deploymentSettings:
+      type: Linear10PercentEvery1Minute
+      alias: Live
+      
+#serverless deploy --stage prd
+#serverless deploy 
