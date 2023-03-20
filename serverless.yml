@@ -23,6 +23,10 @@ provider:
   apiGateway:
     disableDefaultEndpoint: true
   versionFunctions: true
+  #iam:
+    #role: api
+  environment:
+    ENVIRONMENT: ${self:provider.stage}
 
 
 custom:
