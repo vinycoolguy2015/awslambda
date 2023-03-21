@@ -1,0 +1,179 @@
+{
+  "metadata": {
+    "schemaVersion": "1.0",
+    "importType": "LEX",
+    "importFormat": "JSON"
+  },
+  "resource": {
+    "name": "UpdateWAF",
+    "version": "2",
+    "intents": [
+      {
+        "rejectionStatement": {
+          "messages": [
+            {
+              "contentType": "PlainText",
+              "content": "WAF update cancelled."
+            }
+          ]
+        },
+        "name": "WAFUpdate",
+        "version": "2",
+        "fulfillmentActivity": {
+          "codeHook": {
+            "uri": "arn:aws:lambda:us-west-2:xxx:function:waf_fulfilment",
+            "messageVersion": "1.0"
+          },
+          "type": "CodeHook"
+        },
+        "sampleUtterances": [
+          "Add IP to WAF",
+          "Need to Add IP to WAF"
+        ],
+        "slots": [
+            {
+            "sampleUtterances": [],
+            "slotType": "cloudfront",
+            "slotTypeVersion": "1",
+            "obfuscationSetting": "NONE",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "Specify the URL"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "name": "cloudfront"
+          },
+          {
+            "sampleUtterances": [],
+            "slotType": "ipversionfour",
+            "slotTypeVersion": "1",
+            "obfuscationSetting": "NONE",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "Specify the IPV4 IP"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "name": "ipversionfour"
+          },
+           {
+            "sampleUtterances": [],
+            "slotType": "ipversionsix",
+            "slotTypeVersion": "1",
+            "obfuscationSetting": "NONE",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "Specify the IPV6 IP"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "name": "ipversionsix"
+          }
+          
+        ],
+        "confirmationPrompt": {
+          "messages": [
+            {
+              "contentType": "PlainText",
+              "content": "Are you sure you want to update the WAF?"
+            }
+          ],
+          "maxAttempts": 3
+        },
+        "dialogCodeHook": {
+          "uri": "arn:aws:lambda:us-west-2:xxx:function:waf_validation",
+          "messageVersion": "1.0"
+        }
+      }
+    ],
+    "slotTypes": [
+      {
+        "description": "CloudFront Distribuion to be updated",
+        "name": "cloudfront",
+        "version": "1",
+        "enumerationValues": [
+          
+            {
+            "value": "d1cd8l93wjr79n",
+            "synonyms": []
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      },
+      {
+        "name": "ipversionfour",
+        "version": "1",
+        "enumerationValues": [
+          {
+            "value": "10.0.0.0",
+            "synonyms": []
+          },
+          {
+            "value": "10.10.10.10",
+            "synonyms": []
+          },
+          {
+            "value": "100.100.100.100",
+            "synonyms": []
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      },
+      {
+        "name": "ipversionsix",
+        "version": "1",
+        "enumerationValues": [
+          
+          {
+            "value": "2a09:bac1:6520:8::23:316",
+            "synonyms": []
+          },
+          {
+            "value": "2a09:bac5:55fc:15f::23:3ef",
+            "synonyms": []
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      }
+    ],
+    "voiceId": "0",
+    "childDirected": false,
+    "locale": "en-US",
+    "idleSessionTTLInSeconds": 300,
+    "clarificationPrompt": {
+      "messages": [
+        {
+          "contentType": "PlainText",
+          "content": "Please say 'Update WAF' to update a CloudFront WAF"
+        }
+      ],
+      "maxAttempts": 5
+    },
+    "abortStatement": {
+      "messages": [
+        {
+          "contentType": "PlainText",
+          "content": "Sorry, I could not understand. Goodbye."
+        }
+      ]
+    },
+    "detectSentiment": false,
+    "enableModelImprovements": true
+  }
+}
