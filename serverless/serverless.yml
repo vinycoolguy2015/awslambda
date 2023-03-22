@@ -1,0 +1,60 @@
+service: api
+frameworkVersion: '3'
+
+plugins:
+  - serverless-prune-plugin
+provider:
+  name: aws
+  runtime: python3.9
+  region: us-east-1
+  timeout: 30
+  stage: ${opt:stage, 'dev'}
+  logs:
+    restApi: true
+  versionFunctions: true
+  iam:
+    role: 
+      statements:
+        - Effect: Allow
+          Action:
+            - iam:CreatePolicy
+            - s3:CreateAccessPoint
+            - s3:PutObject
+            - cloudfront:GetDistributionConfig
+            - cloudfront:UpdateDistribution
+            - iam:AttachRolePolicy
+          Resource: '*'
+        - Effect: Allow
+          Action:
+            - logs:CreateLogStream
+            - logs:CreateLogGroup
+            - logs:PutLogEvents  
+          Resource: '*'
+  #environment:
+  #  CLOUDFRONT_DISTRIBUTION_ID: E1S1PWKE606KZ
+  #  ROLE_NAME: tenant
+  #  S3_BUCKET: athena
+  #  S3_DOMAIN_NAME: athena.s3.us-east-1.amazonaws.com
+
+
+custom:
+  prune:
+    automatic: true
+    number: 3
+                  
+functions:
+  api:
+    handler: handler.lambda_handler
+    events:
+      - http:
+          method: POST
+          path: /
+          request:
+            parameters:
+              querystrings:
+                tenant: false  
+    environment:
+      CLOUDFRONT_DISTRIBUTION_ID: E1S1PWK
+      ROLE_NAME: tenant
+      S3_BUCKET: athena
+      S3_DOMAIN_NAME: athena.s3.us-east-1.amazonaws.com
