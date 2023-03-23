@@ -103,7 +103,7 @@ aws s3 cp package.json s3://athena1989/folder2/
 aws s3api put-object --body package.json --bucket arn:aws:s3:us-east-1:<AWS_ACCOUNT_ID>:accesspoint/folder1 --key folder1/package.json
  
 # Access denied even though tenant role has access to folder1 access point but that access point can't read/write to folder2 folder
-aws s3api put-object --body package.json --bucket arn:aws:s3:us-east-1:808658323399:accesspoint/folder1 --key folder2/package.json
+aws s3api put-object --body package.json --bucket arn:aws:s3:us-east-1:<AWS_ACCOUNT_ID>:accesspoint/folder1 --key folder2/package.json
  
 # Successful since tenant role has access to folder2 access point and that access point can read/write to folder2 folder
 aws s3api put-object --body package.json --bucket arn:aws:s3:us-east-1:<AWS_ACCOUNT_ID>:accesspoint/folder2 --key folder2/package.json 
