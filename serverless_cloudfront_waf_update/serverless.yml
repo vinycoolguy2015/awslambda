@@ -1,0 +1,57 @@
+service: cloudfront-waf-update
+frameworkVersion: '3'
+
+plugins:
+  - serverless-prune-plugin
+  - serverless-associate-waf
+provider:
+  name: aws
+  runtime: python3.9
+  region: us-east-1
+  timeout: 30
+  stage: ${opt:stage, 'dev'}
+  logs:
+    restApi: true
+  versionFunctions: true
+  iam:
+    role: 
+      statements:
+        - Effect: Allow
+          Action:
+            - wafv2:GetIPSet
+            - wafv2:GetWebACL
+            - wafv2:UpdateIPSet
+            - cloudfront:ListDistributions
+            - cloudfront:GetDistributionConfig
+          Resource: '*'
+        - Effect: Allow
+          Action:
+            - logs:CreateLogStream
+            - logs:CreateLogGroup
+            - logs:PutLogEvents  
+          Resource: '*'
+
+
+custom:
+  associateWaf:
+    name: CloudFlareIPRestrictionWebACL
+    version: V2 #(optional) Regional | V2
+  prune:
+    automatic: true
+    number: 3
+                  
+functions:
+  api:
+    handler: handler.lambda_handler
+    events:
+      - http:
+          method: POST
+          path: /
+          request:
+            parameters:
+              querystrings:
+                environment: false
+                ipv4: false
+                ipv6: false
+resources:
+  - ${file(./resources/waf.yml)}
