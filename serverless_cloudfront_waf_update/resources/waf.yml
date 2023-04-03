@@ -1,0 +1,38 @@
+Resources:
+  CloudFlareIPSet:
+    Type: AWS::WAFv2::IPSet
+    Properties:
+      Description: 'CloudFlare IP ranges'
+      Name: 'CloudFlareIPSet'
+      Scope: REGIONAL
+      IPAddressVersion: IPV4
+      Addresses:
+        - '104.28.254.47/32'
+
+  CloudFlareIPRestrictionWebACL:
+    Type: AWS::WAFv2::WebACL
+    DependsOn:
+      - CloudFlareIPSet
+    Properties:
+      Name: 'CloudFlareIPRestrictionWebACL'
+      Scope: REGIONAL
+      DefaultAction:
+        Block: {}
+      Description: 'To limit access to CloudFlare IP ranges only'
+      Rules:
+        - Name: 'CloudFlareIpLimitationRule'
+          Priority: 0
+          Statement:
+            IPSetReferenceStatement:
+              ARN: !GetAtt CloudFlareIPSet.Arn
+          Action:
+            Allow: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: 'CloudFlareIpLimitationRule'
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: 'CloudFlareWebACLMetric'
+      Capacity: 1
