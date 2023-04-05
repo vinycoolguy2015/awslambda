@@ -1,5 +1,7 @@
 Reference:https://aws.amazon.com/blogs/messaging-and-targeting/forward-incoming-email-to-an-external-destination/
 
+Additional Resource: https://medium.com/naukri-engineering/use-amazon-ses-to-receive-emails-in-s3-and-forward-incoming-email-to-any-external-email-id-84ffb394c70e
+
 As per https://docs.aws.amazon.com/general/latest/gr/ses.html, incoming mail is only available in 
 
 US East (N. Virginia)	us-east-1	
