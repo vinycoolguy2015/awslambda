@@ -10,3 +10,4 @@ If you are using us-east-1	for receiving mail and any other region endpoint for 
 regions.
 
 Lambda code given in the doc forwards the mail as attachment which is not ideal. Lambda code to forward mail properly is given here.
+Few modifications can be done to this code like creating a folder in /tmp and then downloading the files.Once the mail is sent, delete the folder.
