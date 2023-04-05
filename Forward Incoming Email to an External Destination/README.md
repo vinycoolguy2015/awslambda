@@ -11,3 +11,13 @@ regions.
 
 Lambda code given in the doc forwards the mail as attachment which is not ideal. Lambda code to forward mail properly is given here.
 Few modifications can be done to this code like creating a folder in /tmp and then downloading the files.Once the mail is sent, delete the folder.
+
+In SES Recipient condition, add email and set object prefix as incoming.
+
+In Lambda, set following environment variables:
+
+MailRecipient	awsplay@gmail.com
+MailS3Bucket	email-forwarding
+MailS3Prefix	incoming
+MailSender	noreply@xyz.com
+Region	us-east-1
