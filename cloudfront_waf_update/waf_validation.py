@@ -87,7 +87,7 @@ def validate(event,context):
                 'type': 'ElicitSlot',
                 'intentName': event['currentIntent']['name'],
                 'slots': slots,
-                'slotToElicit': 'ipversionfour',
+                'slotToElicit': 'ipversionsix',
                 'message': {'contentType': 'PlainText', 'content': 'Please specify a valid IPV4 IP'}
                 }
                     }
