@@ -1,6 +1,6 @@
 import boto3,botocore.exceptions
 import re
-import sys
+
 
 nat_ip=['10.0.10.186','20.10.14.54']
 waf_client = boto3.client('wafv2',region_name="us-east-1")
