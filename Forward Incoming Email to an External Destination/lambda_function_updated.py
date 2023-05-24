@@ -113,6 +113,8 @@ def lambda_handler(event, context):
     except Exception as error:
         print("An exception occurred:", error)
         send_email("Mail Delivery Notification",message_id+" could not be processed successfully.")
+        for file in os.scandir('/tmp'):
+            os.remove(file.path)
         sys.exit(0)
         
     
@@ -129,6 +131,9 @@ def lambda_handler(event, context):
     except Exception as error:
         print("An exception occurred:", error)
         send_email("Mail Delivery Notification",message_id+" was processed but encountered error during mail forwarding.")
+    finally:
+        for file in os.scandir('/tmp'):
+            os.remove(file.path)
         
 # Environment variables will be like this
 #ErrorNotificationRecipients	error1@xyz.com,error2@xyz.com
