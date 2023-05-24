@@ -128,6 +128,10 @@ def lambda_handler(event, context):
         print("An exception occurred:", error)
         send_email("Mail Delivery Notification","Some messages could not be reprocessed successfully.")
         
+    finally:
+        for file in os.scandir('/tmp'):
+            os.remove(file.path)
+        
         
         
     
