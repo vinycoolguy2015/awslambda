@@ -44,6 +44,8 @@ def lambda_handler(event, context):
     message_id = event['Records'][0]['ses']['mail']['messageId']
     
     try:
+        for file in os.scandir('/tmp'):
+            os.remove(file.path)
         if incoming_email_prefix:
             object_path = (incoming_email_prefix + "/" + message_id)
         else:
