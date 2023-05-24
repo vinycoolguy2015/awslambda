@@ -9,7 +9,7 @@ from email.mime.application import MIMEApplication
 
 
 client_s3 = boto3.client("s3")
-client_ses = boto3.client("ses",region_name='ap-southeast-1')
+client_ses = boto3.client("ses")
 
 def send_email(error_subject,error_message):
     CHARSET = "UTF-8"
