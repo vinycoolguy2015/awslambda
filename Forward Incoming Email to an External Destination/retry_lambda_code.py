@@ -62,6 +62,9 @@ def lambda_handler(event, context):
                     # Read the content of the message.
                     file_content = object_s3['Body'].read()
                     
+                    for file in os.scandir('/tmp'):
+                        os.remove(file.path)
+                    
                     with open("/tmp/"+message_id, "wb") as f:
                         f.write(file_content)
                         f.close()
