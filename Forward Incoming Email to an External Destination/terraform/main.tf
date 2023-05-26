@@ -174,7 +174,7 @@ resource "aws_lambda_function" "ses_email_forward_retry_lambda" {
   filename         = data.archive_file.ses_email_forward_retry_lambda.output_path
   function_name    = format("lambda-%s-retry", local.name)
   role             = aws_iam_role.ses_lambda_role.arn
-  handler          = "ses_email_forward_lambda.lambda_handler"
+  handler          = "ses_email_forward_retry_lambda.lambda_handler"
   source_code_hash = data.archive_file.ses_email_forward_retry_lambda.output_base64sha256
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
