@@ -20,6 +20,7 @@ do
         echo "Waiting for Deployment to start"
         deployment=`curl --silent --insecure --header "Content-Type: application/json" --header "Authorization: Bearer $token" --request GET --url https://bamboo.com/rest/api/latest/deploy/environment/$environment_id/results?max-results=1|jq '.results[0]'`
         deployment_start_date=`echo $deployment|jq '.startedDate'`
+        deployment_status=`echo $deployment|jq '.deploymentState'|tr -d '"'`
         sleep 10
 done
 echo "Deployment started"
