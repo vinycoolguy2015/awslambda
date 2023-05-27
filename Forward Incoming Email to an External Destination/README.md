@@ -22,4 +22,4 @@ MailRecipient	awsplay@gmail.com
 MailS3Bucket	email-forwarding
 MailS3Prefix	incoming
 MailSender	noreply@xyz.com
-Region	us-east-1
+
