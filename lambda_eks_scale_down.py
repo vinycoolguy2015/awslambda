@@ -134,11 +134,13 @@ def lambda_handler(_event, context):
     print("Changing CronJob")
     try:
         for cluster, namespace in cronjob_info.items():
-            if isinstance(namespace, dict):
-                for namespace_name,cronjobs  in namespace.items():
-                    for cronjob in cronjobs:
-                        print(cluster,namespace_name,cronjob)
-                        response = batch_v1.patch_namespaced_cron_job(cronjob, namespace_name,[{'op': 'replace', 'path': '/spec/suspend', 'value': True}])
-                        pprint(response)
+            if cluster == cluster_name:
+                if isinstance(namespace, dict):
+                    for namespace_name,cronjobs  in namespace.items():
+                        for cronjob in cronjobs:
+                            print(cluster,namespace_name,cronjob)
+                            response = batch_v1.patch_namespaced_cron_job(cronjob, namespace_name,[{'op': 'replace', 'path': '/spec/suspend', 'value': True}])
+                            pprint(response)
+                break
     except ApiException as e:
         print("Exception when calling BatchV1Api->patch_namespaced_cron_job: %s\n" % e)
