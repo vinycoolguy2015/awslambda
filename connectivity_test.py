@@ -1,24 +1,21 @@
+import json
 import socket
-
-def ping(host, port):
-    try:
-        # Create a socket object
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(2)  # Set the timeout value for the connection
-
-        # Connect to the host on the specified port
-        result = sock.connect_ex((host, port))
-        if result == 0:
-            print(f"Port {port} is open on {host}")
-        else:
-            print(f"Port {port} is closed on {host}")
-
-        # Close the socket
-        sock.close()
-
-    except socket.error as e:
-        print(f"Error: {e}")
-
 def lambda_handler(event, context):
-    # Usage example
-    ping("google.com", 443)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(10)
+    hostname = "google.com"
+    port = 443
+    server_address = (hostname, port) # Server address and port
+    try:
+      IPAddr = socket.gethostbyname(hostname)
+      print("Hostname: " + hostname)
+      print("Host IP:" + IPAddr)
+      print("Attempting to connect ..")
+      sock.connect(server_address)
+      sock.shutdown(socket.SHUT_RDWR)
+      print("connected")
+    except Exception as e:
+      print("-- Error --")
+      print(e)
+    finally:
+      sock.close()
