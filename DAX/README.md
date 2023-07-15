@@ -1,4 +1,5 @@
 1-Create DAX Cluster with the Terraform code.
+
 2-Launch an EC2 instance. Make sure the IAM role attached to it has following permisison.
 ```
 {
