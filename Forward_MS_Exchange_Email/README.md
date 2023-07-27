@@ -6,15 +6,15 @@ Lambda Code was tested in an environement with no internet connectivity. So a VP
 
 Following Lambda Environment Variables are required:
 
-**ERROR_MAIL_RECIPIENT	      #Email Address To Send A Mail When Lambda Fails To Process An Email
-**EXCHANGE_EMAIL	            #Email Address Associated With Exchange Account
-**EXCHANGE_PASSWORD	        #Exchange Account Password
-**EXCHANGE_SERVER	          #Exchange Server Address Without HTTPS.For example mail.mycorp.com
-**EXCHANGE_USERNAME	        #Exchange Account Username
-**RECIPIENT_EMAIL	          #Email Address To Forward Email To
-**SENDER_EMAIL	              #Email Address To Send Email From
-**SMTP_HOST	                email-smtp.us-east-1.amazonaws.com
-**SMTP_PASSWORD	            #AWS SMTP User Password
-**SMTP_PORT	                587
-**SMTP_USER	                #AWS SMTP Username
+* ERROR_MAIL_RECIPIENT	      #Email Address To Send A Mail When Lambda Fails To Process An Email
+* EXCHANGE_EMAIL	            #Email Address Associated With Exchange Account
+* EXCHANGE_PASSWORD	        #Exchange Account Password
+* EXCHANGE_SERVER	          #Exchange Server Address Without HTTPS.For example mail.mycorp.com
+* EXCHANGE_USERNAME	        #Exchange Account Username
+* RECIPIENT_EMAIL	          #Email Address To Forward Email To
+* SENDER_EMAIL	              #Email Address To Send Email From
+* SMTP_HOST	                email-smtp.us-east-1.amazonaws.com
+* SMTP_PASSWORD	            #AWS SMTP User Password
+* SMTP_PORT	                587
+* SMTP_USER	                #AWS SMTP Username
 
