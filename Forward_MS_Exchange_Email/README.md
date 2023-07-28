@@ -18,3 +18,9 @@ Following Lambda Environment Variables are required:
 * SMTP_PORT	                 587
 * SMTP_USER	                 #AWS SMTP Username
 
+Reference:https://docs.aws.amazon.com/lambda/latest/dg/python-package.html
+
+pip3 install --target ./package exchangelib
+
+pip3 install --target ./package urllib3==1.26.6 --upgrade
+
