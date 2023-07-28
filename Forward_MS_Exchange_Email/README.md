@@ -25,6 +25,10 @@ pip3 install --target ./package exchangelib
 pip3 install --target ./package urllib3==1.26.6 --upgrade
 
 
-Update: For Python 3.9 Lambda runtime, create an EC2 instance with Amazon Linux2 AMI and follow https://computingforgeeks.com/how-to-install-python-on-amazon-linux/ to install Python3.9. Then run pip3.9 install --target ./package exchangelib.
+Update: For Python 3.9 Lambda runtime, create an EC2 instance with Amazon Linux2 AMI and follow https://computingforgeeks.com/how-to-install-python-on-amazon-linux/ to install Python3.9. 
+
+Then run pip3.9 install --target ./package exchangelib.
+
 For Lambda function with Python 3.9 runtime use the code given at my_deployment_package_3.9.zip
 
+Also update ERROR_MAIL_RECIPIENT value as abc@gmail.com,def@gmail.com
