@@ -31,4 +31,4 @@ Then run pip3.9 install --target ./package exchangelib.
 
 For Lambda function with Python 3.9 runtime use the code given at my_deployment_package_3.9.zip
 
-Also update ERROR_MAIL_RECIPIENT value as abc@gmail.com,def@gmail.com
+Also update ERROR_MAIL_RECIPIENT value as abc@gmail.com,def@gmail.com.Make sure Archive and Forwarding-Failure folders are there in outlook
