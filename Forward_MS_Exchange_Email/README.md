@@ -25,7 +25,7 @@ pip3 install --target ./package exchangelib
 pip3 install --target ./package urllib3==1.26.6 --upgrade
 
 
-Update: For Python 3.9 Lambda runtime, create an EC2 instance with Amazon Linux2 AMI and follow https://computingforgeeks.com/how-to-install-python-on-amazon-linux/ to install Python3.9. 
+Update: For Python 3.9 Lambda runtime, create an EC2 instance with Amazon Linux2 AMI and follow https://computingforgeeks.com/how-to-install-python-on-amazon-linux/ to install Python3.9. For Python 3.10, follow https://techviewleo.com/how-to-install-python-on-amazon-linux-2
 
 Then run pip3.9 install --target ./package exchangelib.
 
