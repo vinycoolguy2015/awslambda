@@ -9,9 +9,9 @@ Create an EC2 instance with Amazon Linux2 AMI and follow https://techviewleo.com
 Then run pip3.10 install --target ./package exchangelib to generate the required package.Create a Lambda function with Python 3.10
 runtime and upoload the zipped code.
 
-Make sure Lambda has connectivity to MS Exchange Server
+Make sure Lambda has connectivity to MS Exchange Server.
 
-Lambda Code was tested in an environement with no internet connectivity. So a VPC Endpoint for com.amazonaws.us-east-1.email-smtp was created.
+Lambda Code was tested in an environement with no internet connectivity. So a VPC Endpoint for com.amazonaws.us-east-1.email-smtp was created.Also create AWS SMTP credentials.
 
 Following Lambda Environment Variables are required:
 
