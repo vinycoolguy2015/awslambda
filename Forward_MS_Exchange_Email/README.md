@@ -32,7 +32,6 @@ If you see /var/task/urllib3/connectionpool.py:1095: InsecureRequestWarning: Unv
 
 import urllib3
 
-# Disable the warning for Unverified HTTPS requests
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
