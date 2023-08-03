@@ -28,6 +28,13 @@ Following Lambda Environment Variables are required:
 * SMTP_PORT	                 587
 * SMTP_USER	                 #AWS SMTP Username
 
+If you see /var/task/urllib3/connectionpool.py:1095: InsecureRequestWarning: Unverified HTTPS request is being made to host error in logs, you can add following lines in the code
+
+import urllib3
+
+# Disable the warning for Unverified HTTPS requests
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 
 
