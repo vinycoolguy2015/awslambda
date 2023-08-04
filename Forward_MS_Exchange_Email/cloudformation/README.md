@@ -1,6 +1,6 @@
 We can also do the same setup via CloudFormation. Instructions are given below:
 
-##Pre-requisites:
+Pre-requisites:
 * SES Domain verification and sandbox waiver should already be done
 * Archive and Forwarding-Failed folder should be there in mailbox as it's hardcoded in the code.
 * SMTP user credentials should already be generated
@@ -22,7 +22,7 @@ We can also do the same setup via CloudFormation. Instructions are given below:
       "SMTP_USER": "<AWS SMTP Username>"
     }
 ```
-##CFT Will do following things
+CFT Teamplete Will do following things
 * Create SMTP and SSM VPC EndPoint and Security Group Allowing traffic on port 443 for the CIDR Given
 * Read zip code from S3 and create Lambda function
 * Create 1 SNS Topic and Create CloudWatch Alarm for Lambda Error
