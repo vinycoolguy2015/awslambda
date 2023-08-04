@@ -1,5 +1,3 @@
-CloudFormation Template
-
 Parameters:
   LambdaS3Bucket:
     Type: String
