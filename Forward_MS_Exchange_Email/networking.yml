@@ -1,0 +1,255 @@
+Parameters:
+  VPC:
+    Type: 'AWS::EC2::VPC::Id'
+    Description: VPC ID
+  
+  SubnetCIDR:
+    Type: String
+    Description: CIDR range to create subnets from
+    
+  TGID:
+    Type: String
+    Description: GCCI Intranet Transit Gateway ID for GEN Connectivity
+    
+  NamePrefix:
+    Type: String
+    Description: This value will be used as Name Prefix for resources.
+  
+  CreateSMTPVPCEndpoint:
+    Type: String
+    AllowedValues:
+      - true
+      - false
+    Description: Create SMTP VPC Endpoint Or Not.If Lambda Subnet Has Internet Connectivity Or Endpoint Is Already There Then This EndPoint Is Not Required
+    Default: true
+  CreateSSMVPCEndpoint:
+    Type: String
+    AllowedValues:
+      - true
+      - false
+    Description: Create SSM VPC Endpoint Or Not.If Lambda Subnet Has Internet Connectivity Or Endpoint Is Already There  Then This EndPoint Is Not Required
+    Default: true
+
+Conditions:
+   CreateSMTPEndpoint: !Equals 
+    - !Ref CreateSMTPVPCEndpoint
+    - true
+   CreateSSMEndpoint: !Equals 
+    - !Ref CreateSSMVPCEndpoint
+    - true
+  
+  
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: VPC ID,Subnet CIDR Range,Transit Gateway ID and Name Prefix 
+        Parameters:
+          - VPC
+          - SubnetCIDR
+          - TGID
+          - NamePrefix
+      - Label:
+          default: VPC Endpoints Required Or Not 
+        Parameters:
+          - CreateSMTPVPCEndpoint
+          - CreateSSMVPCEndpoint
+          
+          
+Resources:
+#GUT Subnets
+  GUTSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [0, !Cidr [!Ref SubnetCIDR, 4, 4]]
+      AvailabilityZone: ap-southeast-1a
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Join [ '', [ 'subnet',!Ref NamePrefix,'ezgut-a' ] ]
+
+  GUTSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [1, !Cidr [!Ref SubnetCIDR, 4, 4]]
+      AvailabilityZone: ap-southeast-1b
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Join [ '', ['subnet-', !Ref NamePrefix,'ezgut-b' ] ]
+
+  #Application Subnets
+  AppSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [2, !Cidr [!Ref SubnetCIDR, 4, 4]]
+      AvailabilityZone: ap-southeast-1a
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Join [ '', [ 'subnet-',!Ref NamePrefix,'ezapp-a' ] ]
+      
+  AppSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [3, !Cidr [!Ref SubnetCIDR, 4, 4]]
+      AvailabilityZone: ap-southeast-1b
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Join [ '', [ 'subnet-',!Ref NamePrefix,'ezapp-b' ] ]
+          
+  #Private NAT Gateways
+  PrivateNAT1:
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      ConnectivityType: private
+      SubnetId: !Ref GUTSubnet1
+      Tags:
+        - Key: Name
+          Value: !Join [ '', ['natgw-', !Ref NamePrefix,'ezgut-a' ] ]
+  PrivateNAT2:
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      ConnectivityType: private
+      SubnetId: !Ref GUTSubnet2
+      Tags:
+        - Key: Name
+          Value: !Join [ '', ['natgw-', !Ref NamePrefix,'ezgut-b' ] ]
+          
+#GUT Subnet Route Table          
+  GUTRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+      - Key: Name
+        Value: !Join [ '', ['rt-', !Ref NamePrefix,'ezgut' ] ]
+  GUTRoute:            # Private route table can access web via NAT (created below)
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref GUTRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      TransitGatewayId: !Ref TGID
+      
+  GUTRouteTableAssociation1:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+          SubnetId: !Ref GUTSubnet1
+          RouteTableId: !Ref GUTRouteTable
+          
+  GUTRouteTableAssociation2:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+          SubnetId: !Ref GUTSubnet2
+          RouteTableId: !Ref GUTRouteTable
+          
+#Application Subnet Route Table
+  AppRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+      - Key: Name
+        Value: !Join [ '', ['rt-', !Ref NamePrefix,'ezapp-a' ] ]
+  AppRoute1:            
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref AppRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref PrivateNAT1
+      
+  AppRouteTableAssociation1:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+          SubnetId: !Ref AppSubnet1
+          RouteTableId: !Ref AppRouteTable1
+          
+  AppRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+      - Key: Name
+        Value: !Join [ '', ['rt-', !Ref NamePrefix,'ezapp-b' ] ]
+  AppRoute2:            
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref AppRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref PrivateNAT2
+      
+  AppRouteTableAssociation1:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+          SubnetId: !Ref AppSubnet2
+          RouteTableId: !Ref AppRouteTable2
+          
+#Create SSM and SMTP VPC Endpoint
+  SMTPVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Condition: CreateSMTPEndpoint
+    Properties: 
+      SecurityGroupIds: [!Ref SMTPVPCEndpointSecurityGroup]
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.email-smtp"
+      SubnetIds: [!Ref AppSubnet1,!Ref AppSubnet2]
+      VpcEndpointType: Interface
+      VpcId: !Ref VPC
+      PrivateDnsEnabled: true
+      
+  SMTPVPCEndpointSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Condition: CreateSMTPEndpoint
+    Properties:
+      GroupName: Security Group For SMTP VPC EndPoint
+      GroupDescription: Security Group For SMTP VPC EndPoint
+      VpcId: !Ref VPC
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+  SMTPVPCEndpointSecurityGroupIngress:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    Condition: CreateSMTPEndpoint
+    DependsOn: SMTPVPCEndpointSecurityGroup
+    Properties:
+      GroupId: !Ref SMTPVPCEndpointSecurityGroup
+      IpProtocol: tcp
+      FromPort: '443'
+      ToPort: '443'
+      CidrIp: !Ref SubnetCIDR
+      
+  SSMVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Condition: CreateSSMEndpoint
+    Properties: 
+      SecurityGroupIds: [!Ref SSMVPCEndpointSecurityGroup]
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.ssm"
+      SubnetIds: [!Ref AppSubnet1,!Ref AppSubnet2]
+      VpcEndpointType: Interface
+      VpcId: !Ref VPC
+      PrivateDnsEnabled: true
+      
+  SSMVPCEndpointSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Condition: CreateSSMEndpoint
+    Properties:
+      GroupName: Security Group For SSM VPC EndPoint
+      GroupDescription: Security Group For SSM VPC EndPoint
+      VpcId: !Ref VPC
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+  SSMVPCEndpointSecurityGroupIngress:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    Condition: CreateSSMEndpoint
+    DependsOn: SSMVPCEndpointSecurityGroup
+    Properties:
+      GroupId: !Ref SSMVPCEndpointSecurityGroup
+      IpProtocol: tcp
+      FromPort: '443'
+      ToPort: '443'
+      CidrIp: !Ref SubnetCIDR
