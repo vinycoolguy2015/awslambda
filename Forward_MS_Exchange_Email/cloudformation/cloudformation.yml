@@ -222,6 +222,7 @@ Resources:
       SubnetIds: !Ref LambdaSubnets
       VpcEndpointType: Interface
       VpcId: !Ref VPC
+      PrivateDnsEnabled: true
       
   SMTPVPCEndpointSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -253,6 +254,7 @@ Resources:
       SubnetIds: !Ref LambdaSubnets
       VpcEndpointType: Interface
       VpcId: !Ref VPC
+      PrivateDnsEnabled: true
       
   SSMVPCEndpointSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
