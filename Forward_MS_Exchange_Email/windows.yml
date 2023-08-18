@@ -1,0 +1,141 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  AMI:
+    Type: String
+    Default: ami-063e5fa9f20e47845
+    Description: The Windows AMI to use
+  Subnet:
+    Type: 'AWS::EC2::Subnet::Id'
+    Description: Subnet To Use For EC2 instance
+  VPC:
+    Type: 'AWS::EC2::VPC::Id'
+    Description: VPC ID
+  VPCCIDR:
+    Type: String
+    Description: VPC CIDR Range
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: 'VPC ID,Subnet and AMI Details For Windows Server'
+        Parameters:
+          - VPC
+          - VPCCIDR
+          - Subnet
+          - AMI
+Resources:
+  InstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupName: Windows Server Security Group
+      GroupDescription: Windows Server Security Group
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: '-1'
+          CidrIp: !Ref VPCCIDR
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+  KeyPair:
+    Type: 'AWS::EC2::KeyPair'
+    Properties:
+      KeyFormat: pem
+      KeyName: Windows
+      KeyType: rsa
+  InstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
+  InstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      InstanceProfileName: Windows_Server
+      Path: /
+      Roles:
+        - !Ref InstanceRole
+  WindowsInstance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: !Ref AMI
+      InstanceType: t3.medium
+      IamInstanceProfile: !Ref InstanceProfile
+      KeyName: !Ref KeyPair
+      SubnetId: !Ref Subnet
+      SecurityGroupIds:
+        - Ref: InstanceSecurityGroup
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 30
+      Tags:
+        - Key: Name
+          Value: Windows Server
+  EC2MessagesVPCEndpoint:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      SecurityGroupIds:
+        - !Ref EC2MessagesVPCEndpointSecurityGroup
+      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.ec2messages'
+      SubnetIds:
+        - !Ref Subnet
+      VpcEndpointType: Interface
+      VpcId: !Ref VPC
+      PrivateDnsEnabled: true
+  EC2MessagesVPCEndpointSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupName: Security Group For EC2 Messages VPC EndPoint
+      GroupDescription: Security Group For EC2 Messages VPC EndPoint
+      VpcId: !Ref VPC
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+  EC2MessagesVPCEndpointSecurityGroupIngress:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DependsOn: EC2MessagesVPCEndpointSecurityGroup
+    Properties:
+      GroupId: !Ref EC2MessagesVPCEndpointSecurityGroup
+      IpProtocol: tcp
+      FromPort: '443'
+      ToPort: '443'
+      CidrIp: !Ref VPCCIDR
+  SSMMessagesVPCEndpoint:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      SecurityGroupIds:
+        - !Ref SSMMessagesVPCEndpointSecurityGroup
+      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.ssmmessages'
+      SubnetIds:
+        - !Ref Subnet
+      VpcEndpointType: Interface
+      VpcId: !Ref VPC
+      PrivateDnsEnabled: true
+  SSMMessagesVPCEndpointSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupName: Security Group For SSM Messages VPC EndPoint
+      GroupDescription: Security Group For SSM VPC EndPoint
+      VpcId: !Ref VPC
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+  SSMMessagesVPCEndpointSecurityGroupIngress:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DependsOn: SSMMessagesVPCEndpointSecurityGroup
+    Properties:
+      GroupId: !Ref SSMMessagesVPCEndpointSecurityGroup
+      IpProtocol: tcp
+      FromPort: '443'
+      ToPort: '443'
+      CidrIp: !Ref VPCCIDR
