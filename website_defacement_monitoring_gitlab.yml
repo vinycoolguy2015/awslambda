@@ -1,0 +1,78 @@
+---
+stages:
+  - deploy
+
+.setup-script:
+  before_script:
+    - mkdir -p ~/.aws
+    - echo "${MY_OIDC_TOKEN}" > /tmp/web_identity_token
+    - echo -e
+      "[default]\nrole_arn=${ROLE_ARN}\nweb_identity_token_file=/tmp/web_identity_token"
+      > ~/.aws/config
+  
+.deployment-script:
+  script:
+    - echo "Deploying Static Website"
+    - export AWS_DEFAULT_REGION="us-east-1"
+    - yum install jq -y
+    - |
+      echo "Stopping Canary"
+      aws synthetics stop-canary --name $CANARY
+      canary_state=`aws synthetics get-canary --name $CANARY | jq '.Canary.Status.State'|tr -d '"'`
+      while [ "$canary_state" != "STOPPED" ]; do
+        echo $canary_state
+        canary_state=`aws synthetics get-canary --name $CANARY  | jq '.Canary.Status.State'|tr -d '"'`
+        sleep 5
+      done
+      echo "Canary Stopped"
+
+    - aws s3 cp index.html $S3_BUCKET
+    - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID
+      --paths "/*"
+    - |
+      distribution_id=$CLOUDFRONT_ID
+      distribution_status=""
+      max_retries=30
+      while [[ $distribution_status != "Deployed" || max_retries == 0 ]]; do
+          sleep 15
+          distribution_response=$(aws cloudfront get-distribution --id $distribution_id --region us-east-1)
+          distribution_status=$(jq -r '.Distribution | .Status' <<< "${distribution_response}")
+          echo "Retries left $max_retries | Distribution status $distribution_status"
+          max_retries=$((max_retries-1))
+      done
+      
+      echo "Starting Canary"
+      aws synthetics update-canary --name $CANARY   --visual-reference '{"BaseCanaryRunId": "nextRun"}' 
+      aws synthetics start-canary --name $CANARY 
+      
+      if [[ $distribution_status != "Deployed" ]]; then
+           echo "Distribution failed to complete within maximum retries with status $distribution_status"
+           echo "Please check the cloudfront distribution on the AWS console directly for status updates"
+           exit 1
+      fi
+      
+      
+    
+      
+deploy:
+  stage: deploy
+  variables:
+    ROLE_ARN: "<GITLAB_AWS_ROLE>"
+    S3_BUCKET: "s3://<CLOUDFRONT_S3_BUCKET>"
+    CLOUDFRONT_ID: "<CLOUDFRONT_ID>"
+    CANARY: "<CLOUDWATCH_CANARY_NAME>"
+  image:
+    name: amazon/aws-cli:latest
+    entrypoint:
+      - ""
+  id_tokens:
+    MY_OIDC_TOKEN:
+      aud: https://gitlab.com
+  before_script:
+    !reference [.setup-script, before_script]
+  script:
+    - !reference [.deployment-script, script]
+  environment:
+    name: dev
+    url: <CLOUDFRONT_DNS>
+
