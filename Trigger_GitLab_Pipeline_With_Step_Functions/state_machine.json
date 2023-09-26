@@ -1,0 +1,104 @@
+{
+  "Comment": "GitLab Pipeline State Machine",
+  "StartAt": "Trigger GitLab Pipeline",
+  "States": {
+    "Trigger GitLab Pipeline": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:<AWS_ACCOUNT_ID>:function:GitLab:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Wait For Pipeline Trigger"
+    },
+    "Wait For Pipeline Trigger": {
+      "Type": "Wait",
+      "Seconds": 30,
+      "Next": "Check Pipeline Trigger Status"
+    },
+    "Check Pipeline Trigger Status": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.pipeline_id",
+          "StringEquals": "",
+          "Next": "Pipeline Trigger Failed"
+        }
+      ],
+      "Default": "Check Pipeline Status"
+    },
+    "Pipeline Trigger Failed": {
+      "Type": "Pass",
+      "End": true
+    },
+    "Check Pipeline Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:<AWS_ACCOUNT_ID>:function:GitLab2:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Pipeline Execution Status"
+    },
+    "Pipeline Execution Status": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.pipeline_status",
+          "StringEquals": "failed",
+          "Next": "Pipeline execution failed"
+        },
+        {
+          "Variable": "$.pipeline_status",
+          "StringEquals": "canceled",
+          "Next": "Pipeline execution failed"
+        },
+        {
+          "Variable": "$.pipeline_status",
+          "StringEquals": "success",
+          "Next": "Pipeline execution successful"
+        }
+      ],
+      "Default": "Wait For Pipeline Execution"
+    },
+    "Wait For Pipeline Execution": {
+      "Type": "Wait",
+      "Seconds": 30,
+      "Next": "Check Pipeline Status"
+    },
+    "Pipeline execution failed": {
+      "Type": "Pass",
+      "End": true
+    },
+    "Pipeline execution successful": {
+      "Type": "Pass",
+      "End": true
+    }
+  }
+}
