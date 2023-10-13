@@ -81,6 +81,7 @@ def lambda_handler(event, context):
         msg["Subject"] = item.subject
         msg["From"] = SENDER_EMAIL
         msg["To"] = RECIPIENT_EMAIL
+        msg["Reply-To"] = item.sender.email_address
         msg.attach(MIMEText(item.text_body))
 
         # Add the attachments
