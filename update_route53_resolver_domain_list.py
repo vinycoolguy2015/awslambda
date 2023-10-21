@@ -19,7 +19,7 @@ response = log_client.start_query(
 query_id = response['queryId']
 
 
-response = route53_client.list_firewall_domains(FirewallDomainListId='rslvr-fdl-29a703e106e94b53')
+response = route53_client.list_firewall_domains(FirewallDomainListId=route53_domain_list)
 domain_name_already_whitelisted=response['Domains']
 while True:
     domain_name_to_whitelist=[]
