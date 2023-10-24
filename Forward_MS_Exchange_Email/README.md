@@ -3,7 +3,8 @@ Reference
 * https://www.activestate.com/resources/quick-reads/how-to-install-and-use-exchangelib-python/
 * https://medium.com/thg-tech-blog/youve-got-mail-email-analytics-with-python-and-exchange-7ae152443957
 * https://docs.aws.amazon.com/lambda/latest/dg/python-package.html
-* https://ecederstrand.github.io/exchangelib/ 
+* https://ecederstrand.github.io/exchangelib/
+* https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html
 
 Create an EC2 instance with Amazon Linux2 AMI and follow https://techviewleo.com/how-to-install-python-on-amazon-linux-2 to install Python 3.10.
 
