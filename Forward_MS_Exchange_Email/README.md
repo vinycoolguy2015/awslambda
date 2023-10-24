@@ -34,6 +34,14 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+Once Lambda stack is up,Go to ams-smtp-user user and generate credentials
+
+Go To https://docs.aws.amazon.com/ses/latest/dg/smtp-credentials.html and copy the python code.
+    
+Execute python3 /tmp/smtp.py <SECRET_ACCESS_KEY> ap-southeast-1 to get SMTP Password(SMTP Username is user's Access Key)
+    
+Go to secrets manager and update values.
+
 
 
 
