@@ -45,6 +45,7 @@ Go to secrets manager and update values.
 
 You can also add multiple CC and BCC with following sample code
 
+```
 import json
 import smtplib,email
 from email.mime.multipart import MIMEMultipart
@@ -77,3 +78,4 @@ def lambda_handler(event, context):
     server.login(SMTP_USER, SMTP_PASSWORD)
     server.sendmail(SENDER_EMAIL,RECEIVER_EMAIL, msg=msg.as_string())
     server.close()
+```
