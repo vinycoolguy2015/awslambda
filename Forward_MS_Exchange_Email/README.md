@@ -43,10 +43,37 @@ Execute python3 /tmp/smtp.py <SECRET_ACCESS_KEY> ap-southeast-1 to get SMTP Pass
     
 Go to secrets manager and update values.
 
+You can also add multiple CC and BCC with following sample code
 
+import json
+import smtplib,email
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 
+SMTP_HOST="email-smtp.ap-southeast-1.amazonaws.com"
+SMTP_PORT=587
+SMTP_USER=""
+SMTP_PASSWORD=""
+SENDER_EMAIL="abc@xyz.com"
 
-
-
-
-
+def lambda_handler(event, context):
+    subject = 'Email Setup'
+    body = 'Email Setup'
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = SENDER_EMAIL
+    msg['To'] = "abc@xyz.com,def@xyz.com"
+    msg['CC'] = "ghi@xyz.com,jkl@xyz.com"
+    msg['BCC']= "mno@xyz.com,pqr@xyz.com"
+    
+    MSG_TO_LIST=msg['To'].split(",")
+    MSG_CC_LIST=msg['CC'].split(",")
+    MSG_BCC_LIST=msg['BCC'].split(",")
+    RECEIVER_EMAIL=MSG_TO_LIST+MSG_BCC_LIST
+    
+    server = smtplib.SMTP(host=SMTP_HOST, port=SMTP_PORT)
+    server.starttls()
+    server.login(SMTP_USER, SMTP_PASSWORD)
+    server.sendmail(SENDER_EMAIL,RECEIVER_EMAIL, msg=msg.as_string())
+    server.close()
