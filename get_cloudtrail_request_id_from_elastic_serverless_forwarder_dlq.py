@@ -17,6 +17,7 @@ messages = []
 s3_bucket=''
 s3_objects=[]
 request_ids=[]
+kibana_query="aws.cloudtrail.request_id: ("
 while True:
     response = sqs.receive_message(QueueUrl=queue_url, MaxNumberOfMessages=10)
     if 'Messages' not in response:
@@ -42,4 +43,8 @@ for object in s3_objects:
         for message in json_object['Records']:
             #print(object,message['requestID'])
             request_ids.append(message['requestID'])
-print('\n'.join(request_ids))
+            #kibana_query=kibana_query+message['requestID']
+kibana_query=kibana_query+' or '.join(request_ids)
+kibana_query=kibana_query+")"
+print(kibana_query)
+print("Total number of failed records "+str(len(request_ids)))
