@@ -79,3 +79,11 @@ def lambda_handler(event, context):
     server.sendmail(SENDER_EMAIL,RECEIVER_EMAIL, msg=msg.as_string())
     server.close()
 ```
+
+If you want all the CC recipients of original mail, can use this code
+
+```
+if item.cc_recipients is not None:
+            CC_RECIPIENTS = [recipient.email_address for recipient in item.cc_recipients]
+            msg['CC'] = ','.join(CC_RECIPIENTS)
+```
