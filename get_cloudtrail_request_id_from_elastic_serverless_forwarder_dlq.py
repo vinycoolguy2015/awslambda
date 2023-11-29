@@ -2,7 +2,7 @@ import boto3
 import json
 import gzip
 
-QUEUE='elastic-serverless-forwarder-replay-dlq-1234'
+QUEUE='elastic-serverless-forwarder-replay-dlq' 
  
 # Create an SQS client object
 sqs = boto3.client('sqs',region_name='ap-southeast-1')
@@ -40,10 +40,12 @@ for object in s3_objects:
         gzipped_content = gzipped_file.read()
         json_string = gzipped_content.decode('utf-8')
         json_object = json.loads(json_string)
-        for message in json_object['Records']:
-            #print(object,message['requestID'])
-            request_ids.append(message['requestID'])
-            #kibana_query=kibana_query+message['requestID']
+        if 'Records' in json_object:
+            for message in json_object['Records']:
+                request_ids.append(message['requestID'])
+        else:
+            print(json_object)
+            print("----")
 kibana_query=kibana_query+' or '.join(request_ids)
 kibana_query=kibana_query+")"
 print(kibana_query)
