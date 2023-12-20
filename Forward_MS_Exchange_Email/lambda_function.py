@@ -67,12 +67,14 @@ def lambda_handler(event, context):
         body=""
         print("----------------------------------------")
         #print(item.subject, item.sender, item.datetime_received)
-        if item.text_body:
+        if item.body:
+            body=item.body
+        #if item.text_body:
             #print(f"Body: {item.text_body}")
-            body=item.text_body
-        elif item.html_body:
-            #print(f"Body (HTML): {item.html_body}")
-            body=item.html_body
+        #    body=item.text_body
+        #elif item.html_body:
+        #    #print(f"Body (HTML): {item.html_body}")
+        #    body=item.html_body
         else:
             print("No body found.")
 
