@@ -1,3 +1,32 @@
+'''IAM permission required:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "<DESTINATION_BUCKET_ARN>/*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "<SOURCE_BUCKET_ARN>/*"
+            ]
+        }
+    ]
+}'''
+
+
 import boto3 
 import botocore
 from urllib.parse import unquote_plus
