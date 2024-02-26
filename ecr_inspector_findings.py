@@ -1,3 +1,23 @@
+'''
+IAM Policy
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:DescribeImageScanFindings",
+                "inspector2:ListCoverage",
+                "ecr:DescribeImages",
+                "inspector2:ListFindings"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+'''
+
 import boto3
 
 ecr_repo_list=['repoA','repoB']
