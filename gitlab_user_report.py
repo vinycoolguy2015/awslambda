@@ -39,6 +39,14 @@ def get_pat_id():
     	if token['active']==True and token['name']==TOKEN_NAME:
     		return token['id']
 
+# Function to delete the PAT
+def delete_pat(pat_id):
+    response = requests.delete(f'{GITLAB_URL}/api/v4/personal_access_tokens/{pat_id}', headers=headers,verify=False)
+    if response.status_code == 204:
+        print("Personal Access Token deleted successfully.")
+    else:
+        print(f"Failed to delete Personal Access Token: {response.status_code} - {response.text}")
+        
 # Function to get all groups
 def get_all_groups():
     groups = []
@@ -131,14 +139,6 @@ for group in groups:
 print("All users in all projects and groups with their access levels:")
 for username, details in all_users.items():
     print(f"Username: {username}, Name: {details['name']}, Group Access Level: {details.get('group_access_level', 'N/A')}, Project Access Level: {details.get('project_access_level', 'N/A')}")
-
-# Function to delete the PAT
-def delete_pat(pat_id):
-    response = requests.delete(f'{GITLAB_URL}/api/v4/personal_access_tokens/{pat_id}', headers=headers,verify=False)
-    if response.status_code == 204:
-        print("Personal Access Token deleted successfully.")
-    else:
-        print(f"Failed to delete Personal Access Token: {response.status_code} - {response.text}")
 
 # Delete the PAT at the end
 delete_pat(get_pat_id())
