@@ -46,8 +46,11 @@ def delete_pat(pat_id):
     response = requests.delete(f'{GITLAB_BASE_URL}/api/v4/personal_access_tokens/{pat_id}', headers=headers,verify=False)
     if response.status_code == 204:
         print("Personal Access Token deleted successfully.")
+        return 0
     else:
         print(f"Failed to delete Personal Access Token: {response.status_code} - {response.text}")
+        return 1
+
 
 def get_group_id(group_name):
     url = f"{GITLAB_BASE_URL}/api/v4/groups?search={group_name}"
@@ -152,4 +155,6 @@ def main():
 if __name__ == "__main__":
     main()
     # Delete the PAT at the end
-    delete_pat(get_pat_id())
+    pat_deletion_status = delete_pat(get_pat_id())
+    sys.exit(pat_deletion_status)
+
