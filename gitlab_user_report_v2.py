@@ -134,7 +134,7 @@ def list_users_and_access_levels(project_id):
 def main():
     with open('project_users_access.csv', mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Group Name','Project Name', 'Username', 'Access Level'])
+        writer.writerow(['Group Name','Project Name', 'Username', 'Access Level','User Creation Date','User Status'])
 
         for group_name in [GROUP1_NAME,GROUP2_NAME]:
             group_id = get_group_id(group_name)
@@ -147,7 +147,7 @@ def main():
                 for user in users:
                     if user['access_level'] != 20:  # Exclude Reporters
                         access_level = access_level_mapping.get(user['access_level'], 'Unknown')
-                        writer.writerow([group_name,project['name'], user['username'], access_level])
+                        writer.writerow([group_name,project['name'], user['username'], access_level,user['created_at'],user['state']])
 
 if __name__ == "__main__":
     main()
