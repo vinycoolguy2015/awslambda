@@ -1,0 +1,124 @@
+---
+openapi: 3.0.0
+info:
+  title: Bus Booking - Book or cancel a bus ticket and check booking status 
+  version: 1.0.0
+  description: API for booking a bus ticket, cancelling and checking status of a ticket booking based on bookingID. Also find bus details for a route
+paths:
+  "/busTicketBooking":
+    get:
+      summary: Book a ticket for bus
+      description: Book a ticket for bus. Bus id need to specified by the user
+      operationId: newBooking
+      parameters:
+      - name : busId
+        in: path
+        description: The bus ID customer wants to book a ticket for
+        required: true
+        schema:
+          type: int
+      - name : journeyDate
+        in: path
+        description: Date of journey customer wants to book a ticket for.Should be in YYYY-MM-DD format
+        required: true
+        schema:
+          type: string
+      - name : sourceCity
+        in: path
+        description: Boarding city of journey customer wants to book a ticket for
+        required: true
+        schema:
+          type: string
+      - name : destinationCity
+        in: path
+        description: Arrival city of journey customer wants to book a ticket for
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response containing the booking id details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bookingID:
+                    type: int
+                    description: booking id of the bus ticket
+                  journeyDate:
+                    type: string
+                    description: date of journey customer booked a ticket for  
+                  sourceCity:
+                    type: string
+                    description: Boarding city of journey customer wants to book a ticket for
+                  destinationCity:
+                    type: string
+                    description: Arrival city of journey customer wants to book a ticket for
+  "/busTicketStatus":
+    get:
+      summary: Get status of an existing bus ticket booking
+      description: Get status of an existing bus ticket booking
+      operationId: bookingStatus
+      parameters:
+      - name : bookingID
+        in: path
+        description: The booking id of the bus ticket
+        required: true
+        schema:
+          type: int
+      responses:
+        '200':
+          description: Successful response containing the booking id details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bookingID:
+                    type: int
+                    description: booking id of the bus ticket
+                  journeyDate:
+                    type: string
+                    description: date of journey customer booked a ticket for  
+                  sourceCity:
+                    type: string
+                    description: Boarding city of journey customer wants to book a ticket for
+                  destinationCity:
+                    type: string
+                    description: Arrival city of journey customer wants to book a ticket for  
+                    
+  "/busTicketCancellation":
+    get:
+      summary: Cancel an existing booking id
+      description: Cancel an existing booking id
+      operationId: bookingCancellation
+      parameters:
+      - name : bookingID
+        in: path
+        description: The booking id of the bus ticket
+        required: true
+        schema:
+          type: int
+      responses:
+        '200':
+          description: Successful response containing the booking id cancellation details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bookingID:
+                    type: int
+                    description: booking id of the bus ticket
+                  journeyDate:
+                    type: string
+                    description: date of journey customer booked a ticket for  
+                  sourceCity:
+                    type: string
+                    description: Boarding city of journey customer wants to book a ticket for
+                  destinationCity:
+                    type: string
+                    description: Arrival city of journey customer wants to book a ticket for
+    
+
