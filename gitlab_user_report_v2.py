@@ -75,7 +75,9 @@ def get_projects_in_group(group_id):
     per_page = 100
 
     while True:
-        url = f"{GITLAB_BASE_URL}/api/v4/groups/{group_id}/projects?page={page}&per_page={per_page}"
+        #url = f"{GITLAB_BASE_URL}/api/v4/groups/{group_id}/projects?page={page}&per_page={per_page}"
+        url = f"{GITLAB_BASE_URL}/api/v4/groups/{group_id}/projects?with_shared=false&page={page}&per_page={per_page}"
+        
         response = requests.get(url, headers=headers,verify=False)
 
         if response.status_code != 200:
