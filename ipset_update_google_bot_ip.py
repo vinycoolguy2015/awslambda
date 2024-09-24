@@ -15,7 +15,13 @@ response = http.request('GET', url)
 data = json.loads(response.data.decode('utf-8'))
 
 ipv4_prefixes = [item['ipv4Prefix'] for item in data['prefixes'] if 'ipv4Prefix' in item]
-ipv6_prefixes = [item['ipv6Prefix'] for item in data['prefixes'] if 'ipv6Prefix' in item]
+compressed_ipv6_prefixes = [item['ipv6Prefix'] for item in data['prefixes'] if 'ipv6Prefix' in item]
+ipv6_prefixes = []
+for cidr in compressed_ipv6_prefixes:
+	network = ipaddress.IPv6Network(cidr, strict=False)
+	uncompressed_network = str(network.network_address.exploded)
+	uncompressed_cidr = f"{uncompressed_network}/{network.prefixlen}"
+	ipv6_prefixes.append(uncompressed_cidr)
     
 ipv4_ip_set='whitelist_ipv4_cidr'
 ipv6_ip_set='whitelist_ipv6_cidr'
