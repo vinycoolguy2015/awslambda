@@ -29,7 +29,7 @@ def truncateTable(tableName):
                 break
     print(f"Deleted {counter}")
             
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description="Script to truncate a dynamodb table")
 parser.add_argument("dynamodb_table_name", help="DynamoDB table name you want to truncate")
 args = vars(parser.parse_args())
 truncateTable(args['dynamodb_table_name'])
