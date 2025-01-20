@@ -32,11 +32,12 @@ def lambda_inspector_findings(region):
                     suppress_finding=True
                     break
             if suppress_finding==False:
-                for resource in finding['resources']:
-                    if resource['details']['awsLambdaFunction']['functionName'] not in exempted_functions:
-                        message = {"version": "1.0","source": "custom","content": {
+                if finding['severity'] in ('HIGH','CRITICAL'):
+                    for resource in finding['resources']:
+                        if resource['details']['awsLambdaFunction']['functionName'] not in exempted_functions:
+                            message = {"version": "1.0","source": "custom","content": {
         "description": finding['title'] +" vulnerability found in Lambda function: "+resource['id']}}
-                        sns_client.publish(TargetArn='arn:aws:sns:ap-southeast-1:091308437569:ecr_scan_findings',
+                            sns_client.publish(TargetArn='arn:aws:sns:ap-southeast-1:091308437569:ecr_scan_findings',
                                 Message=json.dumps({'default': json.dumps(message)}),
                                 MessageStructure='json')
                                 
